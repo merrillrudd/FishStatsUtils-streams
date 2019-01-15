@@ -11,7 +11,4 @@ A list with 2 elements, `observations` and `network`. Observations include the p
 \source{
 New Zealand River Environment Classification, contact Shannan Crow (Shannan.Crow@niwa.co.nz) or Simon Hoyle (Simon.Hoyle@niwa.co.nz)
 }
-\examples{
-see vignette
-}
 \keyword{datasets}

@@ -1,36 +1,11 @@
-\name{StreamUtils-package}
+\name{StreamUtils}
 \alias{StreamUtils-package}
 \alias{StreamUtils}
 \docType{package}
-\title{
-\packageTitle{StreamUtils}
-}
+\title{StreamUtils}
 \description{
-\packageDescription{StreamUtils}
+StreamUtils supplements the utilities included in FishStatsUtils for spatio-temporal models (VAST) for stream networks
 }
 \details{
-
-The DESCRIPTION file:
-\packageDESCRIPTION{StreamUtils}
-\packageIndices{StreamUtils}
-~~ An overview of how to use the package, including the most important ~~
-~~ functions ~~
-}
-\author{
-\packageAuthor{StreamUtils}
-
-Maintainer: \packageMaintainer{StreamUtils}
-}
-\references{
-~~ Literature or other references for background information ~~
-}
-~~ Optionally other standard keywords, one per line, from file KEYWORDS in ~~
-~~ the R documentation directory ~~
-\keyword{ package }
-\seealso{
-~~ Optional links to other man pages, e.g. ~~
-~~ \code{\link[<pkg>:<pkg>-package]{<pkg>}} ~~
-}
-\examples{
-~~ simple examples of the most important functions ~~
+Please see examples folder on github \url{http://github.com/merrillrudd/StreamUtils/tree/master/examples} for up-to-date examples
 }
