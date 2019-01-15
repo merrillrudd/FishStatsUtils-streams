@@ -1,0 +1,14 @@
+Package: StreamUtils
+Type: Package
+Title: Additional utilities (shared code and data) for FishStats spatio-temporal modeling toolbox, focusing on modeling stream networks.
+Version: 1.0.0
+Date: 2019-01-15
+Authors@R: person("Merrill", "Rudd", email="merrillrudd@gmail.com", role=c('aut','cre'))
+Maintainer: Merrill Rudd <merrillrudd@gmail.com>
+Description: FishStatsUtils (https://github.com/james-thorson/FishStatsUtils) contains utilities used by multiple packages (VAST, SpatialDeltaGLMM, MIST, etc.) that are designed for spatio-temporal analysis of ecological data. FishStatsUtils-streams includes additional utilities for modeling stream networks.
+License: MIT + file LICENSE
+URL: https://github.com/merrillrudd/FishStatsUtils-streams
+BugReports: https://github.com/merrillrudd/FishStatsUtils-streams/issues
+BuildVignettes: yes
+VignetteBuilder: knitr
+RoxygenNote: 6.1.1
