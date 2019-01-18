@@ -128,7 +128,7 @@ Enc_prob = plot_encounter_diagnostic( Report=Report, Data=Data, DirName=NULL)
 ## diagnostics for positive catch rate component
 Q = plot_quantile_diagnostic( TmbData=Data, Report=Report, FileName_PP="Posterior_Predictive",
   FileName_Phist="Posterior_Predictive-Histogram", 
-  FileName_QQ="Q-Q_plot", FileName_Qhist="Q-Q_hist")
+  FileName_QQ="Q-Q_plot", FileName_Qhist="Q-Q_hist", save_dir=NULL)
 
 ## Diagnostics for plotting residuals on a map
 # Get region-specific settings for plots
@@ -139,7 +139,8 @@ Year_Set = seq(min(Data_Geostat[,'Year']),max(Data_Geostat[,'Year']))
 Years2Include = which( Year_Set %in% sort(unique(Data_Geostat[,'Year'])))
 
 ## Plot Pearson residuals
-plot_residuals(Lat_i=Data_Geostat[,'Lat'], Lon_i=Data_Geostat[,'Lon'], TmbData=Data, Report=Report, Q=Q,  MappingDetails=MapDetails_List[["MappingDetails"]], PlotDF=MapDetails_List[["PlotDF"]], MapSizeRatio=MapDetails_List[["MapSizeRatio"]], Xlim=MapDetails_List[["Xlim"]], Ylim=MapDetails_List[["Ylim"]], FileName=ModFile, Year_Set=Year_Set, Years2Include=Years2Include, Rotate=MapDetails_List[["Rotate"]], Cex=3, pch=19, Legend=MapDetails_List[["Legend"]], zone=MapDetails_List[["Zone"]], mar=c(0,0,2,0), oma=c(3.5,3.5,0,0))
+
+plot_residuals(Lat_i=Data_Geostat[,'Lat'], Lon_i=Data_Geostat[,'Lon'], TmbData=Data, Report=Report, Q=Q,  MappingDetails=MapDetails_List[["MappingDetails"]], PlotDF=MapDetails_List[["PlotDF"]], MapSizeRatio=MapDetails_List[["MapSizeRatio"]], Xlim=MapDetails_List[["Xlim"]], Ylim=MapDetails_List[["Ylim"]], FileName=ModFile, Year_Set=Year_Set, Years2Include=Years2Include, Rotate=MapDetails_List[["Rotate"]], Cex=3, pch=19, Legend=MapDetails_List[["Legend"]], zone=MapDetails_List[["Zone"]], mar=c(0,0,2,0), oma=c(3.5,3.5,0,0), savedir=NULL)
 
 ##### Model output
 ## density surface for each year
