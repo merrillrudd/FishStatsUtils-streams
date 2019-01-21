@@ -10,13 +10,15 @@
 #' @param observations default TRUE to include observations on the figure, FALSE to show only network
 #' @param arrows default TRUE to show directional connections between nodes, but FALSE may prevent crash if there are too many points. 
 #' @param root default TRUE to show root nodes, FALSE in case there are other root nodes that are not meaningful.
+#' @param plot_type 1 == all or 2 == by year
+#' @param show print figure
 #' @param ... addition inputs to \code{plot}
 #' 
 #' @return Figure plotting stream network and observations
 
 #' @export
 
-plot_network <- function(Extrapolation_List, Spatial_List, Data, Data_Geostat, observations=TRUE, arrows=TRUE, root=TRUE, PlotDir=NULL, ...){
+plot_network <- function(Extrapolation_List, Spatial_List, TmbData, Data_Geostat, observations=TRUE, arrows=TRUE, root=TRUE, PlotDir=NULL, plot_type=1, show=TRUE,...){
 
 	## observation locations
 	obs1 <- data.frame(Extrapolation_List$Data_Extrap)
@@ -30,7 +32,7 @@ plot_network <- function(Extrapolation_List, Spatial_List, Data, Data_Geostat, o
 		}
 	}
 
-	Network <- cbind.data.frame('parent_s'=Data$parent_s+1, 'child_s'=Data$child_s+1, Spatial_List$loc_x)
+	Network <- cbind.data.frame('parent_s'=TmbData$parent_s+1, 'child_s'=TmbData$child_s+1, Spatial_List$loc_x)
 
 	years <- unique(Data_Geostat$Year)[order(unique(Data_Geostat$Year))]
 	Network <- lapply(1:length(years), function(x){
@@ -104,7 +106,12 @@ plot_network <- function(Extrapolation_List, Spatial_List, Data, Data_Geostat, o
 		ggsave(file.path(PlotDir, "Network.png"), aa)
 		ggsave(file.path(PlotDir, "Network_byYear.png"), aa)
 	}
-	print(aa)
-	dev.new()
-	print(bb)
+	if(show==TRUE){
+		if(plot_type==1) print(aa)
+		if(plot_type==2) print(bb)
+	}
+	if(show==FALSE){
+		if(plot_type==1) return(aa)
+		if(plot_type==2) return(bb)
+	}
 }

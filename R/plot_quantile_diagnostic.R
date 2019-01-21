@@ -7,6 +7,7 @@
 #' @param FileName_Phist If NULL is specified then do not save this type of plot
 #' @param FileName_QQ If NULL is specified then do not save this type of plot
 #' @param FileName_Qhist If NULL is specified then do not save this type of plot
+#' @param plot default 1:4 to plot all diagnostics
 #' @examples Q <- QQ_Fn(TmbData = TmbData, Report = Report)
 #' @return A list containing results for each specified categories
 #' @export
