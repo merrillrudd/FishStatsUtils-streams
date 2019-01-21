@@ -4,16 +4,14 @@
 \alias{plot_network}
 \title{Plot stream network and optional observations}
 \usage{
-plot_network(Extrapolation_List, Spatial_List, Data, Data_Geostat,
+plot_network(Extrapolation_List, Spatial_List, TmbData, Data_Geostat,
   observations = TRUE, arrows = TRUE, root = TRUE, PlotDir = NULL,
-  ...)
+  plot_type = 1, show = TRUE, ...)
 }
 \arguments{
 \item{Extrapolation_List}{Output from \code{Prepare_Extrapolation_Data_Fn}}
 
 \item{Spatial_List}{Output from \code{FishStatsUtils::make_spatial_list}}
-
-\item{Data}{output of VAST::Data_Fn which includes parent_s and child_s}
 
 \item{Data_Geostat}{data-frame of data (with columns 'Year', 'Lon', 'Lat' or 'E_km', 'N_km' at a minimum)}
 
@@ -25,7 +23,13 @@ plot_network(Extrapolation_List, Spatial_List, Data, Data_Geostat,
 
 \item{PlotDir}{Directory for plots}
 
+\item{plot_type}{1 == all or 2 == by year}
+
+\item{show}{print figure}
+
 \item{...}{addition inputs to \code{plot}}
+
+\item{Data}{output of VAST::Data_Fn which includes parent_s and child_s}
 }
 \value{
 Figure plotting stream network and observations

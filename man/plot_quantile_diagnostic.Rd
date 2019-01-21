@@ -8,7 +8,7 @@ plot_quantile_diagnostic(TmbData, Report, DateFile = paste0(getwd(),
   "/"), save_dir = paste0(DateFile, "/QQ_Fn/"),
   FileName_PP = "Posterior_Predictive",
   FileName_Phist = "Posterior_Predictive-Histogram",
-  FileName_QQ = "Q-Q_plot", FileName_Qhist = "Q-Q_hist")
+  FileName_QQ = "Q-Q_plot", FileName_Qhist = "Q-Q_hist", plot = 1:4)
 }
 \arguments{
 \item{TmbData}{TMB Model input data list}
@@ -24,6 +24,8 @@ plot_quantile_diagnostic(TmbData, Report, DateFile = paste0(getwd(),
 \item{FileName_QQ}{If NULL is specified then do not save this type of plot}
 
 \item{FileName_Qhist}{If NULL is specified then do not save this type of plot}
+
+\item{plot}{default 1:4 to plot all diagnostics}
 }
 \value{
 A list containing results for each specified categories
