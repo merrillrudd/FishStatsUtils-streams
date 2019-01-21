@@ -17,7 +17,8 @@ plot_quantile_diagnostic <- function(TmbData,
                   FileName_PP="Posterior_Predictive",
                   FileName_Phist="Posterior_Predictive-Histogram",
                   FileName_QQ="Q-Q_plot",
-                  FileName_Qhist="Q-Q_hist"){
+                  FileName_Qhist="Q-Q_hist",
+                  plot=1:4){
     
     # Retrieve data based on model type
     if("n_e" %in% names(TmbData)){
@@ -119,46 +120,54 @@ plot_quantile_diagnostic <- function(TmbData,
       }
 
       # Make plot while calculating posterior predictives
-      if(!is.null(FileName_PP) & !is.null(save_dir)) jpeg(save_PP, width=10, height=3, res=200, units="in")
-      if(is.null(save_dir)) dev.new()
-      par(mar=c(2,2,2,0), mgp=c(1.25,0.25,0), tck=-0.02)
-      plot(TmbData$b_i[Which], ylab="", xlab="", log="y", main="", col="blue")
+      if(1 %in% plot){
+        if(!is.null(FileName_PP) & !is.null(save_dir)) jpeg(save_PP, width=10, height=3, res=200, units="in")
+        if(is.null(save_dir)) dev.new()
+        par(mar=c(2,2,2,0), mgp=c(1.25,0.25,0), tck=-0.02)
+        plot(TmbData$b_i[Which], ylab="", xlab="", log="y", main="", col="blue")  
 
-      # Add results to plot: Loop through observations
-      for(ObsI in 1:length(Which)){
-        var_y[ObsI] = var( y[ObsI,] )
-        Quantiles = quantile(y[ObsI,],prob=c(0.025,0.25,0.75,0.975))
-        lines(x=c(ObsI,ObsI), y=Quantiles[2:3], lwd=2)
-        lines(x=c(ObsI,ObsI), y=Quantiles[c(1,4)], lwd=1,lty="dotted")
-        if(TmbData$b_i[Which[ObsI]]>max(Quantiles) | TmbData$b_i[Which[ObsI]]<min(Quantiles)){
-          points(x=ObsI,y=TmbData$b_i[Which[ObsI]],pch=4,col="red",cex=2)
+        # Add results to plot: Loop through observations
+        for(ObsI in 1:length(Which)){
+          var_y[ObsI] = var( y[ObsI,] )
+          Quantiles = quantile(y[ObsI,],prob=c(0.025,0.25,0.75,0.975))
+          lines(x=c(ObsI,ObsI), y=Quantiles[2:3], lwd=2)
+          lines(x=c(ObsI,ObsI), y=Quantiles[c(1,4)], lwd=1,lty="dotted")
+          if(TmbData$b_i[Which[ObsI]]>max(Quantiles) | TmbData$b_i[Which[ObsI]]<min(Quantiles)){
+            points(x=ObsI,y=TmbData$b_i[Which[ObsI]],pch=4,col="red",cex=2)
+          }
         }
+        if(!is.null(FileName_PP) & !is.null(save_dir)) dev.off()
       }
-      if(!is.null(FileName_PP) & !is.null(save_dir)) dev.off()
 
       # Q-Q plot
-      if(!is.null(FileName_Phist) & !is.null(save_dir)) jpeg(save_Phist, width=4, height=4, res=200, units="in")
-      if(is.null(save_dir)) dev.new()
-      par(mfrow=c(1,1), mar=c(2,2,2,0), mgp=c(1.25,0.25,0), tck=-0.02)
-      Qtemp = na.omit(Q)
-      Order = order(Qtemp)
-      plot(x=seq(0,1,length=length(Order)), y=Qtemp[Order], main="Q-Q plot", xlab="Uniform", ylab="Empirical", type="l", lwd=3)
-      abline(a=0,b=1)
-      if(!is.null(FileName_Phist) & !is.null(save_dir)) dev.off()
+      if(2 %in% plot){
+        if(!is.null(FileName_Phist) & !is.null(save_dir)) jpeg(save_Phist, width=4, height=4, res=200, units="in")
+        if(is.null(save_dir)) dev.new()
+        par(mfrow=c(1,1), mar=c(2,2,2,0), mgp=c(1.25,0.25,0), tck=-0.02)
+        Qtemp = na.omit(Q)
+        Order = order(Qtemp)
+        plot(x=seq(0,1,length=length(Order)), y=Qtemp[Order], main="Q-Q plot", xlab="Uniform", ylab="Empirical", type="l", lwd=3)
+        abline(a=0,b=1)
+        if(!is.null(FileName_Phist) & !is.null(save_dir)) dev.off()
+      }
 
       # Aggregate predictive distribution
-      if(!is.null(FileName_QQ) & !is.null(save_dir)) jpeg(save_QQ, width=4, height=4, res=200, units="in")
-      if(is.null(save_dir)) dev.new()
-      par(mfrow=c(1,1), mar=c(2,2,2,0), mgp=c(1.25,0.25,0), tck=-0.02)
-      hist( log(y), main="Aggregate predictive dist.", xlab="log(Obs)", ylab="Density")
-      if(!is.null(FileName_QQ) & !is.null(save_dir)) dev.off()
+      if(3 %in% plot){
+        if(!is.null(FileName_QQ) & !is.null(save_dir)) jpeg(save_QQ, width=4, height=4, res=200, units="in")
+        if(is.null(save_dir)) dev.new()
+        par(mfrow=c(1,1), mar=c(2,2,2,0), mgp=c(1.25,0.25,0), tck=-0.02)
+        hist( log(y), main="Aggregate predictive dist.", xlab="log(Obs)", ylab="Density")
+        if(!is.null(FileName_QQ) & !is.null(save_dir)) dev.off()
+      }
 
       # Quantile histogram
-      if(!is.null(FileName_Qhist) & !is.null(save_dir)) jpeg(save_Qhist, width=4, height=4, res=200, units="in")
-      if(is.null(save_dir)) dev.new()
-      par(mfrow=c(1,1), mar=c(2,2,2,0), mgp=c(1.25,0.25,0), tck=-0.02)
-      hist(na.omit(Q), main="Quantile_histogram", xlab="Quantile", ylab="Number")
-      if(!is.null(FileName_Qhist) & !is.null(save_dir)) dev.off()
+      if(4 %in% plot){
+        if(!is.null(FileName_Qhist) & !is.null(save_dir)) jpeg(save_Qhist, width=4, height=4, res=200, units="in")
+        if(is.null(save_dir)) dev.new()
+        par(mfrow=c(1,1), mar=c(2,2,2,0), mgp=c(1.25,0.25,0), tck=-0.02)
+        hist(na.omit(Q), main="Quantile_histogram", xlab="Quantile", ylab="Number")
+        if(!is.null(FileName_Qhist) & !is.null(save_dir)) dev.off()
+      }
 
       # Return stuff
       Return[[i_e]] = list("type"=ObsModel_ez[i_e,], "Q"=Q, "var_y"=var_y, "pred_y"=pred_y )
