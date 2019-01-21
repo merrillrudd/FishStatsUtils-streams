@@ -126,36 +126,25 @@ Opt[["SD"]]
 Enc_prob = plot_encounter_diagnostic( Report=Report, Data=Data, DirName=NULL)
 
 ## diagnostics for positive catch rate component
-Q = plot_quantile_diagnostic( TmbData=Data, Report=Report, FileName_PP="Posterior_Predictive",
-  FileName_Phist="Posterior_Predictive-Histogram", 
-  FileName_QQ="Q-Q_plot", FileName_Qhist="Q-Q_hist", save_dir=NULL)
+Q = plot_quantile_diagnostic( TmbData=Data, Report=Report, FileName_QQ="Q-Q_plot", DateFile=NULL, save_dir=NULL, plot=2) #StreamUtils::
 
-## Diagnostics for plotting residuals on a map
-# Get region-specific settings for plots
-MapDetails_List = make_map_info( "Region"="User", "NN_Extrap"=Spatial_List$PolygonList$NN_Extrap, "Extrapolation_List"=Extrapolation_List )
+## Plot Pearson residuals
+plot_residuals(Extrapolation_List=Extrapolation_List, Spatial_List=Spatial_List, TmbData=Data, Data_Geostat=Data_Geostat, Report=Report, Q=Q, savedir=NULL, plot_type=1 )
 
+##### Model output
+## density surface for each year
+Dens_xt <- plot_maps(plot_set=3, Report=Report, Spatial_List=Spatial_List, Data_Geostat=Data_Geostat, Panel="year", savedir=NULL)
+
+# ## index of abundance
 # Decide which years to plot                                                   
 Year_Set = seq(min(Data_Geostat[,'Year']),max(Data_Geostat[,'Year']))
 Years2Include = which( Year_Set %in% sort(unique(Data_Geostat[,'Year'])))
 
-## Plot Pearson residuals
-
-plot_residuals(Lat_i=Data_Geostat[,'Lat'], Lon_i=Data_Geostat[,'Lon'], TmbData=Data, Report=Report, Q=Q,  MappingDetails=MapDetails_List[["MappingDetails"]], PlotDF=MapDetails_List[["PlotDF"]], MapSizeRatio=MapDetails_List[["MapSizeRatio"]], Xlim=MapDetails_List[["Xlim"]], Ylim=MapDetails_List[["Ylim"]], FileName=ModFile, Year_Set=Year_Set, Years2Include=Years2Include, Rotate=MapDetails_List[["Rotate"]], Cex=3, pch=19, Legend=MapDetails_List[["Legend"]], zone=MapDetails_List[["Zone"]], mar=c(0,0,2,0), oma=c(3.5,3.5,0,0), savedir=NULL)
-
-##### Model output
-## density surface for each year
-Dens_xt = plot_maps(plot_set=c(1,3), MappingDetails=MapDetails_List[["MappingDetails"]], Report=Report, Sdreport=Opt$SD, PlotDF=MapDetails_List[["PlotDF"]], MapSizeRatio=MapDetails_List[["MapSizeRatio"]], Xlim=MapDetails_List[["Xlim"]], Ylim=MapDetails_List[["Ylim"]], Year_Set=Year_Set, Years2Include=Years2Include, Rotate=MapDetails_List[["Rotate"]], Cex=1.5, pch=19, Legend=MapDetails_List[["Legend"]], zone=MapDetails_List[["Zone"]], mar=c(0,0,2,0), oma=c(3.5,3.5,0,0), plot_legend_fig=TRUE)
-
-# ## index of abundance
-Index = plot_biomass_index( TmbData=Data, Sdreport=Opt$SD, Year_Set=Year_Set, Years2Include=Years2Include, use_biascorr=FALSE )
+Index = plot_biomass_index( TmbData=Data, Sdreport=Opt$SD, Year_Set=Year_Set, Years2Include=Years2Include, use_biascorr=FALSE, DirName=NULL, strata_names = "Longfin eels" )
 
 ##################
-# I'll try turning on spatial variation
+# Now try turning on spatial variation
 ##################
-space_dir <- file.path(nz_enc_dir, "spatial_temporal_effects")
-dir.create(space_dir)
-setwd(space_dir)
-
 FieldConfig = c("Omega1"=1, "Epsilon1"=0, "Omega2"=0, "Epsilon2"=0)
 RhoConfig = c("Beta1"=2, "Beta2"=3, "Epsilon1"=0, "Epsilon2"=0)
 
@@ -189,118 +178,31 @@ Obj$par[grep("logkappa",names(Obj$par))] = log(1/median(Network_sz[,'dist_s']))
 Opt1 = TMBhelper::Optimize( obj=Obj, lower=TmbList[["Lower"]], upper=TmbList[["Upper"]], getsd=FALSE, bias.correct=TRUE, newtonsteps=3, bias.correct.control=list(sd=TRUE, split=NULL, nsplit=1, vars_to_correct="Index_cyl") )
 check <- TMBhelper::Check_Identifiable(Obj)
 
-Opt = TMBhelper::Optimize( obj=Obj, lower=TmbList[["Lower"]], upper=TmbList[["Upper"]], getsd=TRUE, bias.correct=TRUE, newtonsteps=3, bias.correct.control=list(sd=TRUE, split=NULL, nsplit=1, vars_to_correct="Index_cyl") )
+Opt = TMBhelper::Optimize( obj=Obj, startpar=Opt1$par, lower=TmbList[["Lower"]], upper=TmbList[["Upper"]], getsd=TRUE, bias.correct=FALSE, newtonsteps=5, bias.correct.control=list(sd=TRUE, split=NULL, nsplit=1, vars_to_correct="Index_cyl") )
 check <- TMBhelper::Check_Identifiable(Obj)
-#############
-# It has L_omega1_z going to 0 and gradient for kappa is going to zero, so the model is hitting a bound and wants to turn on spatial variation.  So obviously there's too little informatino here for a spatial model.
-Opt$diagnostics[,c('Param','Lower','MLE','Upper','final_gradient')]
 
+Report = Obj$report()
+
+## convergence
+Opt$diagnostics[,c('Param','Lower','MLE','Upper','final_gradient')]
 Opt[["SD"]]
 
-Report <- Obj$report()
-
-plot_data(Extrapolation_List=Extrapolation_List, Spatial_List=Spatial_List, Data_Geostat=Data_Geostat, pch=19, cex=3 )
-
 ## diagnostics for encounter probability component
-Enc_prob = plot_encounter_diagnostic( Report=Report, Data=Data)
+Enc_prob = plot_encounter_diagnostic( Report=Report, Data=Data, DirName=NULL)
 
 ## diagnostics for positive catch rate component
-Q = plot_quantile_diagnostic( TmbData=Data, Report=Report, FileName_PP="Posterior_Predictive",
-  FileName_Phist="Posterior_Predictive-Histogram", 
-  FileName_QQ="Q-Q_plot", FileName_Qhist="Q-Q_hist")
+Q = plot_quantile_diagnostic( TmbData=Data, Report=Report, FileName_QQ="Q-Q_plot", DateFile=NULL, save_dir=NULL, plot=2) #StreamUtils::
 
-## Diagnostics for plotting residuals on a map
-# Get region-specific settings for plots
-MapDetails_List = make_map_info( "Region"="User", "NN_Extrap"=Spatial_List$PolygonList$NN_Extrap, "Extrapolation_List"=Extrapolation_List )
+## Plot Pearson residuals
+plot_residuals(Extrapolation_List=Extrapolation_List, Spatial_List=Spatial_List, TmbData=Data, Data_Geostat=Data_Geostat, Report=Report, Q=Q, savedir=NULL, plot_type=1 )
 
+##### Model output
+## density surface for each year
+Dens_xt <- plot_maps(plot_set=3, Report=Report, Spatial_List=Spatial_List, Data_Geostat=Data_Geostat, Panel="year", savedir=NULL, cex=0.5)
+
+# ## index of abundance
 # Decide which years to plot                                                   
 Year_Set = seq(min(Data_Geostat[,'Year']),max(Data_Geostat[,'Year']))
 Years2Include = which( Year_Set %in% sort(unique(Data_Geostat[,'Year'])))
 
-## Plot Pearson residuals
-plot_residuals(Lat_i=Data_Geostat[,'Lat'], Lon_i=Data_Geostat[,'Lon'], TmbData=Data, Report=Report, Q=Q,  MappingDetails=MapDetails_List[["MappingDetails"]], PlotDF=MapDetails_List[["PlotDF"]], MapSizeRatio=MapDetails_List[["MapSizeRatio"]], Xlim=MapDetails_List[["Xlim"]], Ylim=MapDetails_List[["Ylim"]], FileName=ModFile, Year_Set=Year_Set, Years2Include=Years2Include, Rotate=MapDetails_List[["Rotate"]], Cex=3, pch=19, Legend=MapDetails_List[["Legend"]], zone=MapDetails_List[["Zone"]], mar=c(0,0,2,0), oma=c(3.5,3.5,0,0))
-
-##### Model output
-## density surface for each year
-Dens_xt = plot_maps(plot_set=c(3), MappingDetails=MapDetails_List[["MappingDetails"]], Report=Report, Sdreport=Opt$SD, PlotDF=MapDetails_List[["PlotDF"]], MapSizeRatio=MapDetails_List[["MapSizeRatio"]], Xlim=MapDetails_List[["Xlim"]], Ylim=MapDetails_List[["Ylim"]], Year_Set=Year_Set, Years2Include=Years2Include, Rotate=MapDetails_List[["Rotate"]], Cex=1.5, pch=19, Legend=MapDetails_List[["Legend"]], zone=MapDetails_List[["Zone"]], mar=c(0,0,2,0), oma=c(3.5,3.5,0,0), plot_legend_fig=TRUE)
-
-# ## index of abundance
-Index = plot_biomass_index( TmbData=Data, Sdreport=Opt$SD, Year_Set=Year_Set, Years2Include=Years2Include, use_biascorr=FALSE )
-
-#####################
-## spatiotemporal
-
-space_dir <- file.path(nz_enc_dir, "spatiotemporal_effects")
-dir.create(space_dir)
-setwd(space_dir)
-
-FieldConfig = c("Omega1"=1, "Epsilon1"=1, "Omega2"=0, "Epsilon2"=0)
-RhoConfig = c("Beta1"=2, "Beta2"=3, "Epsilon1"=0, "Epsilon2"=0)
-
-OverdispersionConfig = c("Eta1"=0, "Eta2"=0)
-Options =  c("Calculate_Range"=0,
-            "Calculate_effective_area"=0)
-ObsModel = c(2,0)
-
-Data = Data_Fn("Version"=Version,
-                  "FieldConfig"=FieldConfig,
-                  "OverdispersionConfig"=OverdispersionConfig,
-                  "RhoConfig"=RhoConfig,
-                  "ObsModel"=ObsModel,
-                  "c_iz"=rep(0,nrow(Data_Geostat)),
-                  "b_i"=Data_Geostat[,'Catch_KG'],
-                  "a_i"=Data_Geostat[,'AreaSwept_km2'],
-                  "v_i"=as.numeric(Data_Geostat[,'Vessel'])-1,
-                  "s_i"=Data_Geostat[,'knot_i']-1,
-                  "t_iz"=Data_Geostat[,'Year'],
-                  "a_xl"=Spatial_List$a_xl,
-                  "MeshList"=Spatial_List$MeshList,
-                  "GridList"=Spatial_List$GridList,
-                  "Method"=Spatial_List$Method,
-                  "Options"=Options,
-                  "Network_sz"=Network_sz )
-
-TmbList = Build_TMB_Fn("TmbData"=Data, "Version"=Version, "RhoConfig"=RhoConfig, "loc_x"=Spatial_List$loc_x, "Method"=Method)
-Obj = TmbList[["Obj"]]
-Obj$par[grep("logkappa",names(Obj$par))] = log(1/median(Network_sz[,'dist_s']))
-
-Opt1 = TMBhelper::Optimize( obj=Obj, lower=TmbList[["Lower"]], upper=TmbList[["Upper"]], getsd=FALSE, bias.correct=TRUE, newtonsteps=3, bias.correct.control=list(sd=TRUE, split=NULL, nsplit=1, vars_to_correct="Index_cyl") )
-check <- TMBhelper::Check_Identifiable(Obj)
-
-Opt = TMBhelper::Optimize( obj=Obj, startpar=Opt1$par, lower=TmbList[["Lower"]], upper=TmbList[["Upper"]], getsd=TRUE, bias.correct=TRUE, newtonsteps=3, bias.correct.control=list(sd=TRUE, split=NULL, nsplit=1, vars_to_correct="Index_cyl") )
-check <- TMBhelper::Check_Identifiable(Obj)
-#############
-# It has L_omega1_z going to 0 and gradient for kappa is going to zero, so the model is hitting a bound and wants to turn on spatial variation.  So obviously there's too little informatino here for a spatial model.
-Opt$diagnostics[,c('Param','Lower','MLE','Upper','final_gradient')]
-
-Opt[["SD"]]
-
-Report <- Obj$report()
-
-plot_data(Extrapolation_List=Extrapolation_List, Spatial_List=Spatial_List, Data_Geostat=Data_Geostat, pch=19, cex=3 )
-
-## diagnostics for encounter probability component
-Enc_prob = plot_encounter_diagnostic( Report=Report, Data=Data)
-
-## diagnostics for positive catch rate component
-Q = plot_quantile_diagnostic( TmbData=Data, Report=Report, FileName_PP="Posterior_Predictive",
-  FileName_Phist="Posterior_Predictive-Histogram", 
-  FileName_QQ="Q-Q_plot", FileName_Qhist="Q-Q_hist")
-
-## Diagnostics for plotting residuals on a map
-# Get region-specific settings for plots
-MapDetails_List = make_map_info( "Region"="User", "NN_Extrap"=Spatial_List$PolygonList$NN_Extrap, "Extrapolation_List"=Extrapolation_List )
-
-# Decide which years to plot                                                   
-Year_Set = seq(min(Data_Geostat[,'Year']),max(Data_Geostat[,'Year']))
-Years2Include = which( Year_Set %in% sort(unique(Data_Geostat[,'Year'])))
-
-## Plot Pearson residuals
-plot_residuals(Lat_i=Data_Geostat[,'Lat'], Lon_i=Data_Geostat[,'Lon'], TmbData=Data, Report=Report, Q=Q,  MappingDetails=MapDetails_List[["MappingDetails"]], PlotDF=MapDetails_List[["PlotDF"]], MapSizeRatio=MapDetails_List[["MapSizeRatio"]], Xlim=MapDetails_List[["Xlim"]], Ylim=MapDetails_List[["Ylim"]], FileName=ModFile, Year_Set=Year_Set, Years2Include=Years2Include, Rotate=MapDetails_List[["Rotate"]], Cex=3, pch=19, Legend=MapDetails_List[["Legend"]], zone=MapDetails_List[["Zone"]], mar=c(0,0,2,0), oma=c(3.5,3.5,0,0))
-
-##### Model output
-## density surface for each year
-Dens_xt = plot_maps(plot_set=c(3), MappingDetails=MapDetails_List[["MappingDetails"]], Report=Report, Sdreport=Opt$SD, PlotDF=MapDetails_List[["PlotDF"]], MapSizeRatio=MapDetails_List[["MapSizeRatio"]], Xlim=MapDetails_List[["Xlim"]], Ylim=MapDetails_List[["Ylim"]], Year_Set=Year_Set, Years2Include=Years2Include, Rotate=MapDetails_List[["Rotate"]], Cex=1.5, pch=19, Legend=MapDetails_List[["Legend"]], zone=MapDetails_List[["Zone"]], mar=c(0,0,2,0), oma=c(3.5,3.5,0,0), plot_legend_fig=TRUE)
-
-# ## index of abundance
-Index = plot_biomass_index( TmbData=Data, Sdreport=Opt$SD, Year_Set=Year_Set, Years2Include=Years2Include, use_biascorr=FALSE )
+Index = plot_biomass_index( TmbData=Data, Sdreport=Opt$SD, Year_Set=Year_Set, Years2Include=Years2Include, use_biascorr=FALSE, DirName=NULL, strata_names = "Longfin eels" )

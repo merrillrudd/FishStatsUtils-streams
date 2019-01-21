@@ -7,7 +7,6 @@ rm(list=ls())
 nz_dir <- "C:\\merrill\\stream_networks\\NZ"
 
 data_dir <- file.path(nz_dir, "data")
-data_dir2 <- file.path("C:\\merrill\\StreamUtils\\data")
 
 fig_dir <- file.path(nz_dir, "figures")
 dir.create(fig_dir, showWarnings=FALSE)

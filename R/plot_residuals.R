@@ -138,7 +138,7 @@ plot_residuals = function( Report, Q, savedir=getwd(), Cex=0.01, plot_type=c(1,2
     ## encounter pearson residual
     res <- net + 
         geom_point(data = Q1, aes(x = E_km, y = N_km, color = Residual)) +
-        scale_colour_gradient2(low="blue",mid="white",high="red")
+        scale_colour_gradient2(low="darkblue",mid="white",high="darkred")
     if(1 %in% plot_type){
       print(res)
       if(!is.null(savedir)) ggsave(file.path(savedir, "Pearson residual -- encounter prob.png"), res)
