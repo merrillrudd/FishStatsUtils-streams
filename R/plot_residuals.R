@@ -6,6 +6,8 @@
 #'
 #' @param Q Output from \code{QQ_Fn}
 #' @param savedir directory to use when saving results
+#' @param TmbData output of Data_Fn
+#' @param Report report file Obj$report()
 #' @param plot_type 1 == encounter probability, 2 == catch rates
 #' @inheritParams plot_network
 #' @param ... arguments passed to \code{PlotMap_Fn}
@@ -17,7 +19,7 @@
 #' }
 
 #' @export
-plot_residuals = function( Report, Q, savedir=getwd(), plot_type=c(1,2), ... ){
+plot_residuals = function( Report, Q, TmbData, savedir=getwd(), plot_type=c(1,2), ... ){
 
   ##################
   # Basic inputs

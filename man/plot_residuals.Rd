@@ -4,10 +4,15 @@
 \alias{plot_residuals}
 \title{Plot Pearson residuals on map}
 \usage{
-plot_residuals(Report, Q, savedir = getwd(), plot_type = c(1, 2), ...)
+plot_residuals(Report, Q, TmbData, savedir = getwd(), plot_type = c(1,
+  2), ...)
 }
 \arguments{
+\item{Report}{report file Obj$report()}
+
 \item{Q}{Output from \code{QQ_Fn}}
+
+\item{TmbData}{output of Data_Fn}
 
 \item{savedir}{directory to use when saving results}
 
