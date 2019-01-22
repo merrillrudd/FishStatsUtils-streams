@@ -23,6 +23,8 @@
 #' }
 #' @param Report tagged list of outputs from TMB model via \code{Obj$report()}
 #' @param Sdreport Standard deviation outputs from TMB model via \code{sdreport(Obj)}
+#' @param Year_Set total years
+#' @param Years2Include years with data
 #' @param savedir Directory (absolute path) and base for filenames of plots
 #' @param category_names character vector specifying names for different categories (only used for R package \code{VAST})
 #' @inheritParams plot_network
@@ -268,7 +270,10 @@ function(plot_set=3, Report, Sdreport=NULL,
           if(Nplot!=1) p <- p + ggtitle(paste(category_names[cI], plot_names[plot_num]))
           if(Nplot==1) p <- p + ggtitle(paste(plot_names[plot_num]))
 
-          if(!is.null(savedir)) ggsave(file.path(savedir, paste0(plot_names[plot_num], "_", cI, ".png")), p)
+          if(!is.null(savedir)){
+            if(Nplot!=1) ggsave(file.path(savedir, paste0(plot_names[plot_num], "_", cI, ".png")), p)
+            if(Nplot==1) ggsave(file.path(savedir, paste0(plot_names[plot_num], ".png")), p)
+          }
           dev.new()
           print(p)
         # Do plot
