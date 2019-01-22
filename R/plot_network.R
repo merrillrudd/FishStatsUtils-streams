@@ -67,8 +67,8 @@ plot_network <- function(Extrapolation_List, Spatial_List, TmbData, Data_Geostat
 			obs$Category <- new_cat
 		}
 		 aa <- aa + 
-				geom_point(data = obs, aes(x = E_km, y = N_km, color=Category), cex=3) + 
-				scale_color_brewer(palette = "Set1") +
+				geom_point(data = obs, aes(x = E_km, y = N_km, fill=Category), cex=3, pch=22) + 
+				scale_fill_brewer(palette = "Set1") +
 				guides(color=guide_legend(title="Category"))
 	}
 
@@ -112,8 +112,8 @@ plot_network <- function(Extrapolation_List, Spatial_List, TmbData, Data_Geostat
 			obs$Category <- new_cat
 		}
 		 bb <- bb + 
-				geom_point(data = obs, aes(x = E_km, y = N_km, color=Category), cex=3) + 
-				scale_color_brewer(palette = "Set1") +
+				geom_point(data = obs, aes(x = E_km, y = N_km, fill=Category), cex=3, pch=22) + 
+				scale_fill_brewer(palette = "Set1") +
 				guides(color=guide_legend(title="Category"))
 	}
 
