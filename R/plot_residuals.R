@@ -139,16 +139,16 @@ plot_residuals = function( Report, Q, TmbData, savedir=getwd(), plot_type=c(1,2)
 
     ## encounter pearson residual
     res <- net + 
-        geom_point(data = Q1, aes(x = E_km, y = N_km, color = Residual)) +
-        scale_colour_gradient2(low="darkblue",mid="white",high="darkred")
+        geom_point(data = Q1, aes(x = E_km, y = N_km, fill = Residual), pch=22, cex=3) +
+        scale_fill_gradient2(low="darkblue",mid="white",high="darkred")
     if(1 %in% plot_type){
       print(res)
       if(!is.null(savedir)) ggsave(file.path(savedir, "Pearson residual -- encounter prob.png"), res)
     }
 
     res2 <- net + 
-        geom_point(data = Q2, aes(x = E_km, y = N_km, color = Residual)) +
-        scale_colour_gradient2(low="blue",mid="white",high="red")
+        geom_point(data = Q2, aes(x = E_km, y = N_km, fill = Residual), pch=22, cex=3) +
+        scale_fill_gradient2(low="blue",mid="white",high="red")
     if(2 %in% plot_type){
       print(res2)
       if(!is.null(savedir)) ggsave(file.path(savedir, "Pearson residual -- catch rates.png"), res2)
