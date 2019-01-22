@@ -191,7 +191,7 @@ Opt[["SD"]]
 Enc_prob = plot_encounter_diagnostic( Report=Report, Data=Data, DirName=NULL)
 
 ## diagnostics for positive catch rate component
-Q = plot_quantile_diagnostic( TmbData=Data, Report=Report, FileName_QQ="Q-Q_plot", DateFile=NULL, save_dir=NULL, plot=2) #StreamUtils::
+Q = StreamUtils::plot_quantile_diagnostic( TmbData=Data, Report=Report, FileName_QQ="Q-Q_plot", DateFile=NULL, save_dir=NULL, plot=2) #StreamUtils::
 
 ## Plot Pearson residuals
 plot_residuals(Extrapolation_List=Extrapolation_List, Spatial_List=Spatial_List, TmbData=Data, Data_Geostat=Data_Geostat, Report=Report, Q=Q, savedir=NULL, plot_type=1 )

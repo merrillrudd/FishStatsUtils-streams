@@ -40,9 +40,9 @@
 #' @export
 plot_maps <-
 function(plot_set=3, Report, Sdreport=NULL,
-         TmbData=NULL, Panel="Category",
+         TmbData=NULL, #Panel="Category",
          savedir=paste0(getwd(),"/"), 
-         category_names=NULL,...){
+         category_names=NULL, ...){
 
   # avoid attaching maps and mapdata to use worldHires plotting
   if( !(all(c("package:maps","package:mapdata") %in% search())) ){
@@ -107,9 +107,7 @@ function(plot_set=3, Report, Sdreport=NULL,
 
   # Extract elements
   plot_codes <- c("Pres", "Pos", "Dens", "Pos_Rescaled", "Dens_Rescaled", "Eps_Pres", "Eps_Pos", "LinPred_Pres", "LinPred_Pos", "Dens_CV", "Covariates", "Total_dens", "Cov_effects_Pres", "Cov_effects_Pos")
-  if( is.null(textmargin)){
-    textmargin <- c("Probability of encounter", "Density, ln(kg. per square km.)", "Density, ln(kg. per square km.)", "", "", "", "", "", "", "CV of density (dimensionless)", "Covariate value", "Density, ln(kg. per square km.)", "", "")
-  }
+  plot_names <- c("presence/absence", "log-positive catch rates", "log-density", "positive catch rates", "density", "epsilon for presence/absence", "epsilon for positive catch rates", "encounter probability linear predictor", "positive catch rates linear predictor", "density CV", "covariates", "total density", "encounter probability covariate effects", "catch rates covariate effects")
 
   # Loop through plots
   for(plot_num in plot_set){
@@ -229,39 +227,69 @@ function(plot_set=3, Report, Sdreport=NULL,
       if("dhat_ktp" %in% names(Report)) stop()
       if("dpred_ktp" %in% names(Report)) stop()
     }
-    n_t <- dim(Array_xct)[3]
     years <- min(Data_Geostat$Year):max(Data_Geostat$Year)
-    if(n_t != length(years)) stop("number of years in density array does not match Data_Geostat years")
-    xct <- lapply(1:n_t, function(x){
-      mat <- matrix(Array_xct[,,x])
-      if(ncol(mat)==1){
-        out <- data.frame('value'=mat[,1], 'category'=1, 'year'=years[x], Spatial_List$loc_x)
-      }
-      if(ncol(mat)>1){
-        out <- data.frame('value'=mat[,1], 'category'=mat[,2], 'year'=years[x], Spatial_List$loc_x)
-      }
-      return(out)
-    })
-    xct <- do.call(rbind, xct)
+    # xct <- lapply(1:n_t, function(x){
+    #   mat <- matrix(Array_xct[,,x], ncol=n_c)
+    #   if(ncol(mat)==1){
+    #     out <- data.frame('value'=mat[,1], 'category'=1, 'year'=years[x], Spatial_List$loc_x)
+    #   }
+    #   if(ncol(mat)>1){
+    #     out <- data.frame('value'=mat[,1], 'category'=mat[,2], 'year'=years[x], Spatial_List$loc_x)
+    #   }
+    #   return(out)
+    # })
+    # xct <- do.call(rbind, xct)
 
     # Col = colorRampPalette(colors=c("darkblue","blue","lightblue","lightgreen","yellow","orange","red"))
-    p <- ggplot(xct) +
-      geom_point(aes(x = E_km, y = N_km, color = value), alpha=0.7, ...) +
-      scale_color_distiller(palette = "Spectral") +
-      xlab("Eastings") + ylab("Northings") +
-      mytheme() +
-      guides(color=guide_legend(title=plot_codes[plot_num]))
-    if(tolower(Panel)=="category"){
-     p <- p + facet_wrap(~category)
-    }
-    if(tolower(Panel)=="year"){
-      p <- p + facet_wrap(~year)
-    }
-    if(!is.null(savedir)) ggsave(file.path(savedir, paste0(plot_codes[plot_num],".png")), p)
+    
+    # if( tolower(Panel)=="category" ){
+      if(length(dim(Array_xct))==2) Nplot = 1
+      if(length(dim(Array_xct))==3) Nplot = dim(Array_xct)[2]
+      for( cI in 1:Nplot){
+        if(length(dim(Array_xct))==2) Mat_xt = Array_xct
+        if(length(dim(Array_xct))==3) Mat_xt = Array_xct[,cI,]
+          ## matrix is number of nodes by number of years
+          n_t <- dim(Mat_xt)[2]
+          if(n_t != length(years)) stop("number of years in density array does not match Data_Geostat years")
+          xct <- lapply(1:n_t, function(x){
+            out <- data.frame('value'=Mat_xt[,x], 'year'=years[x], Spatial_List$loc_x)
+            return(out)
+          })
+          xct <- do.call(rbind, xct)
+
+          p <- ggplot(xct) +
+              geom_point(aes(x = E_km, y = N_km, color = value))+#, ...) +
+              scale_color_distiller(palette = "Spectral") +
+              ggtitle(paste(category_names[cI], plot_names[plot_num])) +
+              # guides(color=guide_legend(title=plot_codes[plot_num])) +
+              facet_wrap(~year) + 
+              mytheme() +
+              xlab("Eastings") + ylab("Northings")
+          if(!is.null(savedir)) ggsave(file.path(savedir, paste0(plot_names[plot_num], "_", cI, ".png")), p)
+          dev.new()
+          print(p)
+        # Do plot
+        # if( is.null(mfrow)) mfrow = c(ceiling(sqrt(length(Years2Include))), ceiling(length(Years2Include)/ceiling(sqrt(length(Years2Include)))))
+        # if(add==FALSE) par( mfrow=mfrow )
+        # PlotMap_Fn( MappingDetails=MappingDetails, Mat=Mat_xt[,Years2Include,drop=FALSE], PlotDF=PlotDF, MapSizeRatio=MapSizeRatio, Xlim=Xlim, Ylim=Ylim, FileName=paste0(FileName,plot_codes[plot_num],ifelse(Nplot>1,paste0("--",category_names[cI]),"")), Year_Set=Year_Set[Years2Include], Rescale=Rescale, Rotate=Rotate, Format=Format, Res=Res, zone=zone, Cex=Cex, textmargin=textmargin[plot_num], add=add, pch=pch, Legend=Legend, mfrow=mfrow, plot_legend_fig=plot_legend_fig, ...)
+      }
+    # }
+    # # Plot for each year
+    # if( tolower(Panel)=="year" ){
+    #   Nplot = length(Years2Include)
+    #   for( tI in 1:Nplot){
+    #     if(length(dim(Array_xct))==2) Mat_xc = Array_xct[,Years2Include[tI],drop=TRUE]
+    #     if(length(dim(Array_xct))==3) Mat_xc = Array_xct[,,Years2Include[tI],drop=TRUE]
+    #     Return = Mat_xc = array( as.vector(Mat_xc), dim=c(dim(Array_xct)[1],Ncategories)) # Reformat to make sure it has same format for everything
+
+    #     # Do plot
+    #     if( is.null(mfrow)) mfrow = c(ceiling(sqrt(length(category_names))), ceiling(length(category_names)/ceiling(sqrt(length(category_names)))))
+    #     if(add==FALSE) par( mfrow=mfrow )
+    #     PlotMap_Fn( MappingDetails=MappingDetails, Mat=Mat_xc, PlotDF=PlotDF, MapSizeRatio=MapSizeRatio, Xlim=Xlim, Ylim=Ylim, FileName=paste0(FileName,plot_codes[plot_num],ifelse(Nplot>1,paste0("--",Year_Set[Years2Include][tI]),"")), Year_Set=category_names, Rescale=Rescale, Rotate=Rotate, Format=Format, Res=Res, zone=zone, Cex=Cex, textmargin=textmargin[plot_num], add=add, pch=pch, Legend=Legend, mfrow=mfrow, plot_legend_fig=plot_legend_fig, ...)
+    #   }
+    # }
   }
 
 
-  print(p)
-
-  return( invisible(xct) )
+  # return( invisible(xct) )
 }
