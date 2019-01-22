@@ -2,7 +2,7 @@
 #' Plot standard maps
 #'
 #' @description
-#' \code{plot_maps} plots a standard set of diagnostic maps
+#' \code{plot_maps} plots a standard set of diagnostic maps for stream network models
 #'
 #' @param plot_set integer-vector defining plots to create
 #' \describe{
@@ -23,7 +23,6 @@
 #' }
 #' @param Report tagged list of outputs from TMB model via \code{Obj$report()}
 #' @param Sdreport Standard deviation outputs from TMB model via \code{sdreport(Obj)}
-#' @param Panel Whether to plot years for a given category (\code{Panel="Category"}) or categories for a given year ((\code{Panel="Year"})  in each panel figure
 #' @param savedir Directory (absolute path) and base for filenames of plots
 #' @param category_names character vector specifying names for different categories (only used for R package \code{VAST})
 #' @inheritParams plot_network
@@ -40,7 +39,7 @@
 #' @export
 plot_maps <-
 function(plot_set=3, Report, Sdreport=NULL,
-         TmbData=NULL, #Panel="Category",
+         TmbData=NULL, 
          savedir=paste0(getwd(),"/"), 
          category_names=NULL, ...){
 
@@ -260,11 +259,13 @@ function(plot_set=3, Report, Sdreport=NULL,
           p <- ggplot(xct) +
               geom_point(aes(x = E_km, y = N_km, color = value))+#, ...) +
               scale_color_distiller(palette = "Spectral") +
-              ggtitle(paste(category_names[cI], plot_names[plot_num])) +
               # guides(color=guide_legend(title=plot_codes[plot_num])) +
               facet_wrap(~year) + 
               mytheme() +
               xlab("Eastings") + ylab("Northings")
+          if(Nplot!=1) p <- p + ggtitle(paste(category_names[cI], plot_names[plot_num]))
+          if(Nplot==1) p <- p + ggtitle(paste(plot_names[plot_num]))
+
           if(!is.null(savedir)) ggsave(file.path(savedir, paste0(plot_names[plot_num], "_", cI, ".png")), p)
           dev.new()
           print(p)

@@ -3,7 +3,7 @@
 #' Plot index of abundance
 #'
 #' @description
-#' \code{plot_biomass_index} plots an index proportion to population abundance
+#' \code{plot_biomass_index} plots an index proportion to population abundance for stream networks
 #'
 #' @param TmbData Formatted data inputs, from `VAST::Data_Fn(...)`
 #' @param DirName Directory for saving plot and table
