@@ -5,7 +5,7 @@
 #' \code{plot_residuals} shows average Pearson residual for every knot for encounter probability and positive catch rate components
 #'
 #' @param Q Output from \code{QQ_Fn}
-#' @param savdir directory to use when saving results
+#' @param savedir directory to use when saving results
 #' @param plot_type 1 == encounter probability, 2 == catch rates
 #' @inheritParams plot_network
 #' @param ... arguments passed to \code{PlotMap_Fn}
@@ -17,7 +17,7 @@
 #' }
 
 #' @export
-plot_residuals = function( Report, Q, savedir=getwd(), Cex=0.01, plot_type=c(1,2), ... ){
+plot_residuals = function( Report, Q, savedir=getwd(), plot_type=c(1,2), ... ){
 
   ##################
   # Basic inputs

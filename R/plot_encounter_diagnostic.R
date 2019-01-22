@@ -8,6 +8,7 @@
 #' @inheritParams plot_maps
 #' @inheritParams plot_biomass_index
 #' @param ... arguments passed to \code{par}
+#' @importFrom FishStatsUtils plot_lines
 #'
 #' @return Return Tagged list of output
 #' \describe{
@@ -16,7 +17,7 @@
 #' }
 
 #' @export
-plot_encounter_diagnostic = function( Report, Data, cutpoints_z=seq(0,1,length=21), interval_width=1.96, DirName=paste0(getwd(),"/"),
+plot_encounter_diagnostic = function( Report, Data, cutpoints_z=seq(0,1,length=21), interval_width=1.96, savedir=paste0(getwd(),"/"),
   PlotName="Diag--Encounter_prob.png", ... ){
 
   # Get bin for each datum
@@ -34,13 +35,13 @@ plot_encounter_diagnostic = function( Report, Data, cutpoints_z=seq(0,1,length=2
 
   # Plot
   Par = list( mar=c(3,3,1,1), mgp=c(2,0.5,0), tck=-0.02, ... )
-  if(is.null(DirName)==FALSE) png( file=paste0(DirName,"/",PlotName), width=5, height=5, res=200, units="in")
+  if(is.null(savedir)==FALSE) png( file=paste0(savedir,"/",PlotName), width=5, height=5, res=200, units="in")
     par( Par )
     plot( x=midpoints_z, y=freq_z, pch=20, cex=1.2, xlim=c(0,1), ylim=c(0,1), xlab="Predicted encounter probability", ylab="Observed encounter frequency" )
     plot_lines( x=midpoints_z[which(!is.na(mean_z))], y=mean_z[which(!is.na(mean_z))], ybounds=(mean_z%o%c(1,1)+sd_mean_z%o%c(-interval_width,interval_width))[which(!is.na(mean_z)),], lwd=2, bounds_type="shading", col_bounds=rgb(1,0,0,0.2), col="red" )
     abline(a=0, b=1, lty="dotted", lwd=2 )
     legend( "topleft", legend=c("Observed","Predicted"), fill=c("black","red"), bty="n")
-  if(is.null(DirName)==FALSE) dev.off()
+  if(is.null(savedir)==FALSE) dev.off()
 
   # Return stuff
   Return = NULL

@@ -6,7 +6,7 @@
 #' \code{plot_biomass_index} plots an index proportion to population abundance for stream networks
 #'
 #' @param TmbData Formatted data inputs, from `VAST::Data_Fn(...)`
-#' @param DirName Directory for saving plot and table
+#' @param savedir Directory for saving plot and table
 #' @param PlotName Name for plot
 #' @param interval_width width for confidence intervals
 #' @param strata_names names for spatial strata
@@ -20,6 +20,7 @@
 #' @param treat_missing_as_zero Boolean whether to treat years and species with no (or only NA) data as instances where the index should be zero
 #' @param ... Other inputs to `par()`
 #' @inheritParams plot_maps
+#' @importFrom FishStatsUtils plot_lines
 #'
 #' @return Return Tagged list of output
 #' \describe{
@@ -29,7 +30,7 @@
 
 #' @export
 plot_biomass_index <-
-function( TmbData, Sdreport, Year_Set=NULL, Years2Include=NULL, DirName=paste0(getwd(),"/"), PlotName="Index", interval_width=1,
+function( TmbData, Sdreport, Year_Set=NULL, Years2Include=NULL, savedir=paste0(getwd(),"/"), PlotName="Index", interval_width=1,
   strata_names=NULL, category_names=NULL, use_biascorr=TRUE, plot_legend=TRUE, total_area_km2=NULL, plot_log=FALSE, width=4, height=4,
   treat_missing_as_zero=FALSE, create_covariance_table=FALSE, ... ){
 
@@ -203,7 +204,7 @@ function( TmbData, Sdreport, Year_Set=NULL, Years2Include=NULL, DirName=paste0(g
   if( !is.null(Bratio_ctl) ) Plot_suffix = c( Plot_suffix, "Bratio" )
   for( plotI in 1:length(Plot_suffix) ){
     Par = list( mar=c(2,2,1,0), mgp=c(2,0.5,0), tck=-0.02, yaxs="i", oma=c(1,2,0,0), mfrow=c(ceiling(sqrt(TmbData$n_c)),ceiling(TmbData$n_c/ceiling(sqrt(TmbData$n_c)))), ... )
-    if(!is.null(DirName)) png( file=paste0(DirName,"/",PlotName,"-",Plot_suffix[plotI],".png"), width=width, height=height, res=200, units="in")
+    if(!is.null(savedir)) png( file=paste0(savedir,"/",PlotName,"-",Plot_suffix[plotI],".png"), width=width, height=height, res=200, units="in")
       par( Par )
       for( cI in 1:TmbData$n_c ){
         if( Plot_suffix[plotI]=="Biomass" ){ Array_ctl = Index_ctl; log_Array_ctl = log_Index_ctl }
@@ -219,13 +220,13 @@ function( TmbData, Sdreport, Year_Set=NULL, Years2Include=NULL, DirName=paste0(g
         if(plot_legend==TRUE & cI==TmbData$n_c) legend( "top", bty="n", fill=c(na.omit(ifelse(Calc_design==TRUE,"black",NA)),rainbow(TmbData[['n_l']])), legend=c(na.omit(ifelse(Calc_design==TRUE,"Design-based",NA)),as.character(strata_names)), ncol=2 )
       }
       mtext( side=1:2, text=c("Year",switch(Plot_suffix[plotI], "Biomass"="Abundance (metric tonnes)", "Bratio"="Biomass ratio")), outer=TRUE, line=c(0,0) )
-    if(!is.null(DirName)) dev.off()
+    if(!is.null(savedir)) dev.off()
   }
 
   # Plot
   if( !is.null(Fratio_ct) ){
     Par = list( mar=c(2,2,1,0), mgp=c(2,0.5,0), tck=-0.02, yaxs="i", oma=c(1,2,0,0), mfrow=c(ceiling(sqrt(TmbData$n_c)),ceiling(TmbData$n_c/ceiling(sqrt(TmbData$n_c)))), ... )
-    if(!is.null(DirName)) png( file=paste0(DirName,"/",PlotName,"-Fratio.png"), width=width, height=height, res=200, units="in")
+    if(!is.null(savedir)) png( file=paste0(savedir,"/",PlotName,"-Fratio.png"), width=width, height=height, res=200, units="in")
       par( Par )
       Array_ct = Fratio_ct
       Array_ct = ifelse( Array_ct==0, NA, Array_ct )
@@ -238,14 +239,14 @@ function( TmbData, Sdreport, Year_Set=NULL, Years2Include=NULL, DirName=paste0(g
         plot_lines( y=Array_ct[cI,Years2Include,'Estimate'], x=Year_Set[Years2Include], ybounds=(Array_ct[cI,Years2Include,'Estimate']%o%c(1,1))+Array_ct[cI,Years2Include,'Std. Error']%o%c(-interval_width,interval_width), type="b", col="black", col_bounds="black", ylim=Ylim)
       }
       mtext( side=1:2, text=c("Year","Fishing ratio"), outer=TRUE, line=c(0,0) )
-    if(!is.null(DirName)) dev.off()
+    if(!is.null(savedir)) dev.off()
   }
 
   # Plot stock status
   if( !is.null(Bratio_ctl) & !is.null(Fratio_ct) ){
     Par = list( mar=c(2,2,1,0), mgp=c(2,0.5,0), tck=-0.02, yaxs="i", oma=c(1,2,0,0), mfrow=c(ceiling(sqrt(TmbData$n_c)),ceiling(TmbData$n_c/ceiling(sqrt(TmbData$n_c)))), ... )
     Col = colorRampPalette(colors=c("blue","purple","red"))
-    if(!is.null(DirName)) png( file=paste0(DirName,"/",PlotName,"-Status.png"), width=width, height=height, res=200, units="in")
+    if(!is.null(savedir)) png( file=paste0(savedir,"/",PlotName,"-Status.png"), width=width, height=height, res=200, units="in")
       par( Par )
       Array1_ct = Bratio_ctl[,,1,]
       Array1_ct = ifelse( Array1_ct==0, NA, Array1_ct )
@@ -267,7 +268,7 @@ function( TmbData, Sdreport, Year_Set=NULL, Years2Include=NULL, DirName=paste0(g
       }
       legend( "topright", bty="n", fill=c(Col(length(Year_Set))[Years2Include[1]],Col(length(Year_Set))[rev(Years2Include)[1]]), legend=c(Year_Set[Years2Include[1]],Year_Set[rev(Years2Include)[1]]) )
       mtext( side=1:2, text=c("Biomass relative to unfished","Fishing relative to F_40%"), outer=TRUE, line=c(0,0) )
-    if(!is.null(DirName)) dev.off()
+    if(!is.null(savedir)) dev.off()
   }
 
   # Write to file
@@ -278,7 +279,7 @@ function( TmbData, Sdreport, Year_Set=NULL, Years2Include=NULL, DirName=paste0(g
     Table = rbind( Table, Tmp )
   }
   if(!is.null(total_area_km2)) Table = cbind(Table, "Naive_design-based_index"=Design_t)
-  if(!is.null(DirName)) write.csv( Table, file=paste0(DirName,"/Table_for_SS3.csv"), row.names=FALSE)
+  if(!is.null(savedir)) write.csv( Table, file=paste0(savedir,"/Table_for_SS3.csv"), row.names=FALSE)
 
   # Return stuff
   Return = list( "Table"=Table, "log_Index_ctl"=log_Index_ctl, "Index_ctl"=Index_ctl, "Ylim"=Ylim )

@@ -5,7 +5,7 @@
 \title{Plot index of abundance}
 \usage{
 plot_biomass_index(TmbData, Sdreport, Year_Set = NULL,
-  Years2Include = NULL, DirName = paste0(getwd(), "/"),
+  Years2Include = NULL, savedir = paste0(getwd(), "/"),
   PlotName = "Index", interval_width = 1, strata_names = NULL,
   category_names = NULL, use_biascorr = TRUE, plot_legend = TRUE,
   total_area_km2 = NULL, plot_log = FALSE, width = 4, height = 4,
@@ -16,7 +16,7 @@ plot_biomass_index(TmbData, Sdreport, Year_Set = NULL,
 
 \item{Sdreport}{Standard deviation outputs from TMB model via \code{sdreport(Obj)}}
 
-\item{DirName}{Directory for saving plot and table}
+\item{savedir}{Directory for saving plot and table}
 
 \item{PlotName}{Name for plot}
 
@@ -49,5 +49,5 @@ Return Tagged list of output
 }
 }
 \description{
-\code{plot_biomass_index} plots an index proportion to population abundance
+\code{plot_biomass_index} plots an index proportion to population abundance for stream networks
 }

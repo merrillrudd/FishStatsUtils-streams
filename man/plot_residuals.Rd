@@ -4,17 +4,16 @@
 \alias{plot_residuals}
 \title{Plot Pearson residuals on map}
 \usage{
-plot_residuals(Report, Q, savedir = getwd(), Cex = 0.01,
-  plot_type = c(1, 2), ...)
+plot_residuals(Report, Q, savedir = getwd(), plot_type = c(1, 2), ...)
 }
 \arguments{
 \item{Q}{Output from \code{QQ_Fn}}
 
+\item{savedir}{directory to use when saving results}
+
 \item{plot_type}{1 == encounter probability, 2 == catch rates}
 
 \item{...}{arguments passed to \code{PlotMap_Fn}}
-
-\item{savdir}{directory to use when saving results}
 }
 \value{
 A tagged list of Pearson residuals

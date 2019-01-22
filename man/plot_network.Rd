@@ -5,8 +5,8 @@
 \title{Plot stream network and optional observations}
 \usage{
 plot_network(Extrapolation_List, Spatial_List, TmbData, Data_Geostat,
-  observations = TRUE, arrows = TRUE, root = TRUE, PlotDir = NULL,
-  plot_type = 1, show = TRUE, ...)
+  category_names = NULL, observations = TRUE, arrows = TRUE,
+  root = TRUE, savedir = NULL, plot_type = 1, show = TRUE, ...)
 }
 \arguments{
 \item{Extrapolation_List}{Output from \code{Prepare_Extrapolation_Data_Fn}}
@@ -15,13 +15,15 @@ plot_network(Extrapolation_List, Spatial_List, TmbData, Data_Geostat,
 
 \item{Data_Geostat}{data-frame of data (with columns 'Year', 'Lon', 'Lat' or 'E_km', 'N_km' at a minimum)}
 
+\item{category_names}{names for numeric categories in Data_Geostat}
+
 \item{observations}{default TRUE to include observations on the figure, FALSE to show only network}
 
 \item{arrows}{default TRUE to show directional connections between nodes, but FALSE may prevent crash if there are too many points.}
 
 \item{root}{default TRUE to show root nodes, FALSE in case there are other root nodes that are not meaningful.}
 
-\item{PlotDir}{Directory for plots}
+\item{savedir}{Directory for plots}
 
 \item{plot_type}{1 == all or 2 == by year}
 

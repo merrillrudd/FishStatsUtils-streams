@@ -32,6 +32,8 @@
 #'   \item{y}{bottom and top limits for legend in percentage of panel}
 #' }
 #' @param ... arguments passed to \code{PlotMap_Fn}
+#' @importFrom ggplot2 ggplot geom_point scale_color_distiller aes facet_wrap xlab ylab ggsave ggtitle
+#' @importFrom RuddR mytheme
 #'
 #' @return Mat_xt a matrix (rows: modeled knots; column: modeled year) for plotted output of last element of \code{plot_set}
 #'

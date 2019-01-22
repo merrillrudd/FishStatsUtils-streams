@@ -5,7 +5,7 @@
 \title{Diagnostic QQ function}
 \usage{
 plot_quantile_diagnostic(TmbData, Report, DateFile = paste0(getwd(),
-  "/"), save_dir = paste0(DateFile, "/QQ_Fn/"),
+  "/"), savedir = paste0(DateFile, "/QQ_Fn/"),
   FileName_PP = "Posterior_Predictive",
   FileName_Phist = "Posterior_Predictive-Histogram",
   FileName_QQ = "Q-Q_plot", FileName_Qhist = "Q-Q_hist", plot = 1:4)
@@ -15,7 +15,7 @@ plot_quantile_diagnostic(TmbData, Report, DateFile = paste0(getwd(),
 
 \item{Report}{TMB Model output data list}
 
-\item{save_dir}{Directory to save plots, if NULL is specified then do not save plot}
+\item{savedir}{Directory to save plots, if NULL is specified then do not save plot}
 
 \item{FileName_PP}{If NULL is specified then do not save this type of plot}
 

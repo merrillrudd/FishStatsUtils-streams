@@ -2,7 +2,7 @@
 #' 
 #' @param TmbData TMB Model input data list
 #' @param Report TMB Model output data list
-#' @param save_dir Directory to save plots, if NULL is specified then do not save plot
+#' @param savedir Directory to save plots, if NULL is specified then do not save plot
 #' @param FileName_PP If NULL is specified then do not save this type of plot
 #' @param FileName_Phist If NULL is specified then do not save this type of plot
 #' @param FileName_QQ If NULL is specified then do not save this type of plot
@@ -14,7 +14,7 @@
 plot_quantile_diagnostic <- function(TmbData,
                   Report, 
                   DateFile=paste0(getwd(),"/"),
-                  save_dir=paste0(DateFile,"/QQ_Fn/"),
+                  savedir=paste0(DateFile,"/QQ_Fn/"),
                   FileName_PP="Posterior_Predictive",
                   FileName_Phist="Posterior_Predictive-Histogram",
                   FileName_QQ="Q-Q_plot",
@@ -54,10 +54,10 @@ plot_quantile_diagnostic <- function(TmbData,
     if(nrow(as.matrix(ObsModel_ez))!=n_e) stop("Error in ObsModel_ez: nrow does not agree with n_e")
     if(nrow(as.matrix(sigmaM))!=n_e) stop("Error in sigmaM: nrow does not agree with n_e")
     
-    # Check save_dir
-    if(!is.null(save_dir)){
-      dir.create(save_dir, recursive=TRUE, showWarnings = FALSE)
-      if(!dir.exists(save_dir)) stop(paste0("Wrong directory, cannot save plots: ", save_dir))
+    # Check savedir
+    if(!is.null(savedir)){
+      dir.create(savedir, recursive=TRUE, showWarnings = FALSE)
+      if(!dir.exists(savedir)) stop(paste0("Wrong directory, cannot save plots: ", savedir))
     }
     
     # Return list
@@ -70,11 +70,11 @@ plot_quantile_diagnostic <- function(TmbData,
     for(i_e in 1:n_e){
 
       # Generate plot names
-      if(!is.null(save_dir)){
-        if(!is.null(FileName_PP)) save_PP=paste0(save_dir,"/",FileName_PP,"-",i_e,".jpg")
-        if(!is.null(FileName_Phist)) save_Phist=paste0(save_dir,"/",FileName_Phist, "-",i_e,".jpg")
-        if(!is.null(FileName_QQ)) save_QQ=paste0(save_dir,"/",FileName_QQ,"-",i_e,".jpg")
-        if(!is.null(FileName_Qhist)) save_Qhist=paste0(save_dir,"/",FileName_Qhist,"-",i_e,".jpg")
+      if(!is.null(savedir)){
+        if(!is.null(FileName_PP)) save_PP=paste0(savedir,"/",FileName_PP,"-",i_e,".jpg")
+        if(!is.null(FileName_Phist)) save_Phist=paste0(savedir,"/",FileName_Phist, "-",i_e,".jpg")
+        if(!is.null(FileName_QQ)) save_QQ=paste0(savedir,"/",FileName_QQ,"-",i_e,".jpg")
+        if(!is.null(FileName_Qhist)) save_Qhist=paste0(savedir,"/",FileName_Qhist,"-",i_e,".jpg")
       }
 
       # Find where b_i > 0 within category i_e
@@ -122,8 +122,8 @@ plot_quantile_diagnostic <- function(TmbData,
 
       # Make plot while calculating posterior predictives
       if(1 %in% plot){
-        if(!is.null(FileName_PP) & !is.null(save_dir)) jpeg(save_PP, width=10, height=3, res=200, units="in")
-        if(is.null(save_dir)) dev.new()
+        if(!is.null(FileName_PP) & !is.null(savedir)) jpeg(save_PP, width=10, height=3, res=200, units="in")
+        if(is.null(savedir)) dev.new()
         par(mar=c(2,2,2,0), mgp=c(1.25,0.25,0), tck=-0.02)
         plot(TmbData$b_i[Which], ylab="", xlab="", log="y", main="", col="blue")  
 
@@ -137,37 +137,37 @@ plot_quantile_diagnostic <- function(TmbData,
             points(x=ObsI,y=TmbData$b_i[Which[ObsI]],pch=4,col="red",cex=2)
           }
         }
-        if(!is.null(FileName_PP) & !is.null(save_dir)) dev.off()
+        if(!is.null(FileName_PP) & !is.null(savedir)) dev.off()
       }
 
       # Q-Q plot
       if(2 %in% plot){
-        if(!is.null(FileName_Phist) & !is.null(save_dir)) jpeg(save_Phist, width=4, height=4, res=200, units="in")
-        if(is.null(save_dir)) dev.new()
+        if(!is.null(FileName_Phist) & !is.null(savedir)) jpeg(save_Phist, width=4, height=4, res=200, units="in")
+        if(is.null(savedir)) dev.new()
         par(mfrow=c(1,1), mar=c(2,2,2,0), mgp=c(1.25,0.25,0), tck=-0.02)
         Qtemp = na.omit(Q)
         Order = order(Qtemp)
         plot(x=seq(0,1,length=length(Order)), y=Qtemp[Order], main="Q-Q plot", xlab="Uniform", ylab="Empirical", type="l", lwd=3)
         abline(a=0,b=1)
-        if(!is.null(FileName_Phist) & !is.null(save_dir)) dev.off()
+        if(!is.null(FileName_Phist) & !is.null(savedir)) dev.off()
       }
 
       # Aggregate predictive distribution
       if(3 %in% plot){
-        if(!is.null(FileName_QQ) & !is.null(save_dir)) jpeg(save_QQ, width=4, height=4, res=200, units="in")
-        if(is.null(save_dir)) dev.new()
+        if(!is.null(FileName_QQ) & !is.null(savedir)) jpeg(save_QQ, width=4, height=4, res=200, units="in")
+        if(is.null(savedir)) dev.new()
         par(mfrow=c(1,1), mar=c(2,2,2,0), mgp=c(1.25,0.25,0), tck=-0.02)
         hist( log(y), main="Aggregate predictive dist.", xlab="log(Obs)", ylab="Density")
-        if(!is.null(FileName_QQ) & !is.null(save_dir)) dev.off()
+        if(!is.null(FileName_QQ) & !is.null(savedir)) dev.off()
       }
 
       # Quantile histogram
       if(4 %in% plot){
-        if(!is.null(FileName_Qhist) & !is.null(save_dir)) jpeg(save_Qhist, width=4, height=4, res=200, units="in")
-        if(is.null(save_dir)) dev.new()
+        if(!is.null(FileName_Qhist) & !is.null(savedir)) jpeg(save_Qhist, width=4, height=4, res=200, units="in")
+        if(is.null(savedir)) dev.new()
         par(mfrow=c(1,1), mar=c(2,2,2,0), mgp=c(1.25,0.25,0), tck=-0.02)
         hist(na.omit(Q), main="Quantile_histogram", xlab="Quantile", ylab="Number")
-        if(!is.null(FileName_Qhist) & !is.null(save_dir)) dev.off()
+        if(!is.null(FileName_Qhist) & !is.null(savedir)) dev.off()
       }
 
       # Return stuff

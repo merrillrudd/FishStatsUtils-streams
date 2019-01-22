@@ -7,7 +7,7 @@
 #' @param Data output of VAST::Data_Fn which includes parent_s and child_s
 #' @param Data_Geostat data-frame of data (with columns 'Year', 'Lon', 'Lat' or 'E_km', 'N_km' at a minimum)
 #' @param category_names names for numeric categories in Data_Geostat
-#' @param PlotDir Directory for plots
+#' @param savedir Directory for plots
 #' @param observations default TRUE to include observations on the figure, FALSE to show only network
 #' @param arrows default TRUE to show directional connections between nodes, but FALSE may prevent crash if there are too many points. 
 #' @param root default TRUE to show root nodes, FALSE in case there are other root nodes that are not meaningful.
@@ -16,10 +16,8 @@
 #' @param ... addition inputs to \code{plot}
 #' 
 #' @return Figure plotting stream network and observations
-
 #' @export
-
-plot_network <- function(Extrapolation_List, Spatial_List, TmbData, Data_Geostat, category_names=NULL, observations=TRUE, arrows=TRUE, root=TRUE, PlotDir=NULL, plot_type=1, show=TRUE,...){
+plot_network <- function(Extrapolation_List, Spatial_List, TmbData, Data_Geostat, category_names=NULL, observations=TRUE, arrows=TRUE, root=TRUE, savedir=NULL, plot_type=1, show=TRUE,...){
 
 	## observation locations
 	obs1 <- data.frame(Extrapolation_List$Data_Extrap)
@@ -119,9 +117,9 @@ plot_network <- function(Extrapolation_List, Spatial_List, TmbData, Data_Geostat
 				guides(color=guide_legend(title="Category"))
 	}
 
-	if(all(is.null(PlotDir))==FALSE){
-		ggsave(file.path(PlotDir, "Network.png"), aa)
-		ggsave(file.path(PlotDir, "Network_byYear.png"), bb)
+	if(all(is.null(savedir))==FALSE){
+		ggsave(file.path(savedir, "Network.png"), aa)
+		ggsave(file.path(savedir, "Network_byYear.png"), bb)
 	}
 	if(show==TRUE){
 		if(plot_type==1) print(aa)

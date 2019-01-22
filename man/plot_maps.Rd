@@ -5,8 +5,7 @@
 \title{Plot standard maps}
 \usage{
 plot_maps(plot_set = 3, Report, Sdreport = NULL, TmbData = NULL,
-  Panel = "Category", savedir = paste0(getwd(), "/"),
-  category_names = NULL, ...)
+  savedir = paste0(getwd(), "/"), category_names = NULL, ...)
 }
 \arguments{
 \item{plot_set}{integer-vector defining plots to create
@@ -31,8 +30,6 @@ plot_maps(plot_set = 3, Report, Sdreport = NULL, TmbData = NULL,
 
 \item{Sdreport}{Standard deviation outputs from TMB model via \code{sdreport(Obj)}}
 
-\item{Panel}{Whether to plot years for a given category (\code{Panel="Category"}) or categories for a given year ((\code{Panel="Year"})  in each panel figure}
-
 \item{savedir}{Directory (absolute path) and base for filenames of plots}
 
 \item{category_names}{character vector specifying names for different categories (only used for R package \code{VAST})}
@@ -43,5 +40,5 @@ plot_maps(plot_set = 3, Report, Sdreport = NULL, TmbData = NULL,
 Mat_xt a matrix (rows: modeled knots; column: modeled year) for plotted output of last element of \code{plot_set}
 }
 \description{
-\code{plot_maps} plots a standard set of diagnostic maps
+\code{plot_maps} plots a standard set of diagnostic maps for stream network models
 }
