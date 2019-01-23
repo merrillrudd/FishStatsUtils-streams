@@ -261,7 +261,7 @@ function(plot_set=3, Report, Sdreport=NULL,
           xct <- do.call(rbind, xct)
 
           p <- ggplot(xct) +
-              geom_point(aes(x = E_km, y = N_km, color = value))+#, ...) +
+              geom_point(aes(x = E_km, y = N_km, color = value), ...) +
               scale_color_distiller(palette = "Spectral") +
               # guides(color=guide_legend(title=plot_codes[plot_num])) +
               facet_wrap(~year) + 
