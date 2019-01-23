@@ -141,7 +141,7 @@ plot_residuals = function( Report, Q, TmbData, savedir=getwd(), plot_type=c(1,2)
     res <- net + 
         geom_point(data = Q1, aes(x = E_km, y = N_km, fill = Residual), pch=22, cex=3) +
         scale_fill_gradient2(low="darkblue",mid="white",high="darkred") +
-        scale_x_continuous(breaks=quantile(Q1$E_km, prob=c(0.1,0.5,0.9)), labels=round(quantile(Q1$E_km, prob=c(0.1,0.5,0.9)),0))
+        scale_x_continuous(breaks=quantile(Q1$E_km, prob=c(0.1,0.5,0.99)), labels=round(quantile(Q1$E_km, prob=c(0.1,0.5,0.99)),0))
     if(1 %in% plot_type){
       print(res)
       if(!is.null(savedir)) ggsave(file.path(savedir, "Pearson residual -- encounter prob.png"), res)
@@ -150,7 +150,7 @@ plot_residuals = function( Report, Q, TmbData, savedir=getwd(), plot_type=c(1,2)
     res2 <- net + 
         geom_point(data = Q2, aes(x = E_km, y = N_km, fill = Residual), pch=22, cex=3) +
         scale_fill_gradient2(low="blue",mid="white",high="red") +
-        scale_x_continuous(breaks=quantile(Q1$E_km, prob=c(0.1,0.5,0.9)), labels=round(quantile(Q1$E_km, prob=c(0.1,0.5,0.9)),0))
+        scale_x_continuous(breaks=quantile(Q1$E_km, prob=c(0.1,0.5,0.99)), labels=round(quantile(Q1$E_km, prob=c(0.1,0.5,0.99)),0))
     if(2 %in% plot_type){
       print(res2)
       if(!is.null(savedir)) ggsave(file.path(savedir, "Pearson residual -- catch rates.png"), res2)
