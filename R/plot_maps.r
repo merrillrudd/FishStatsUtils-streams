@@ -263,6 +263,7 @@ function(plot_set=3, Report, Sdreport=NULL,
           p <- ggplot(xct) +
               geom_point(aes(x = E_km, y = N_km, color = value), ...) +
               scale_color_distiller(palette = "Spectral") +
+              scale_x_continuous(breaks=quantile(xct$E_km, prob=c(0.1,0.5,0.9)), labels=round(quantile(xct$E_km, prob=c(0.1,0.5,0.9)),0)) +
               # guides(color=guide_legend(title=plot_codes[plot_num])) +
               facet_wrap(~year) + 
               mytheme() +
