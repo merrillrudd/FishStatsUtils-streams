@@ -8,6 +8,7 @@
 #' @param FileName_QQ If NULL is specified then do not save this type of plot
 #' @param FileName_Qhist If NULL is specified then do not save this type of plot
 #' @param plot default 1:4 to plot all diagnostics
+#' @param category_names names of categories for plotting labels
 #' @examples Q <- QQ_Fn(TmbData = TmbData, Report = Report)
 #' @return A list containing results for each specified categories
 #' @export
@@ -19,7 +20,8 @@ plot_quantile_diagnostic <- function(TmbData,
                   FileName_Phist="Posterior_Predictive-Histogram",
                   FileName_QQ="Q-Q_plot",
                   FileName_Qhist="Q-Q_hist",
-                  plot=1:4){
+                  plot=1:4,
+                  category_names=NULL){
     
     # Retrieve data based on model type
     if("n_e" %in% names(TmbData)){
@@ -147,7 +149,8 @@ plot_quantile_diagnostic <- function(TmbData,
         par(mfrow=c(1,1), mar=c(2,2,2,0), mgp=c(1.25,0.25,0), tck=-0.02)
         Qtemp = na.omit(Q)
         Order = order(Qtemp)
-        plot(x=seq(0,1,length=length(Order)), y=Qtemp[Order], main="Q-Q plot", xlab="Uniform", ylab="Empirical", type="l", lwd=3)
+        main_label <- ifelse(n_e == 1, "Q-Q plot", paste0(category_names[i_e]," Q-Q plot"))
+        plot(x=seq(0,1,length=length(Order)), y=Qtemp[Order], main=main_label, xlab="Uniform", ylab="Empirical", type="l", lwd=3)
         abline(a=0,b=1)
         if(!is.null(FileName_Phist) & !is.null(savedir)) dev.off()
       }
@@ -157,7 +160,8 @@ plot_quantile_diagnostic <- function(TmbData,
         if(!is.null(FileName_QQ) & !is.null(savedir)) jpeg(save_QQ, width=4, height=4, res=200, units="in")
         if(is.null(savedir)) dev.new()
         par(mfrow=c(1,1), mar=c(2,2,2,0), mgp=c(1.25,0.25,0), tck=-0.02)
-        hist( log(y), main="Aggregate predictive dist.", xlab="log(Obs)", ylab="Density")
+        main_label <- ifelse(n_e == 1, "Aggregate predictive dist.", paste0(category_names[i_e]," aggregate predictive dist."))
+        hist( log(y), main=main_label, xlab="log(Obs)", ylab="Density")
         if(!is.null(FileName_QQ) & !is.null(savedir)) dev.off()
       }
 
@@ -166,7 +170,8 @@ plot_quantile_diagnostic <- function(TmbData,
         if(!is.null(FileName_Qhist) & !is.null(savedir)) jpeg(save_Qhist, width=4, height=4, res=200, units="in")
         if(is.null(savedir)) dev.new()
         par(mfrow=c(1,1), mar=c(2,2,2,0), mgp=c(1.25,0.25,0), tck=-0.02)
-        hist(na.omit(Q), main="Quantile_histogram", xlab="Quantile", ylab="Number")
+        main_label <- ifelse(n_e == 1, "Quantile histogram", paste0(category_names[i_e]," quantile histogram"))
+        hist(na.omit(Q), main=main_label, xlab="Quantile", ylab="Number")
         if(!is.null(FileName_Qhist) & !is.null(savedir)) dev.off()
       }
 
