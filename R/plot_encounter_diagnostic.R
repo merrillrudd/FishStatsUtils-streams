@@ -21,10 +21,13 @@ plot_encounter_diagnostic = function( Report, Data, cutpoints_z=seq(0,1,length=2
   PlotName="Diag--Encounter_prob.png", ... ){
 
   # Get bin for each datum
+  ## Report$R1_i = probability of occurrence
+  ## place the predicted probability of occurrence for each observation i into bins in 0.05 intervals between [0,1]
   z_i = cut( Report$R1_i, breaks=cutpoints_z, include.lowest=TRUE )
   midpoints_z = rowMeans( cbind(cutpoints_z[-1],cutpoints_z[-length(cutpoints_z)]) )
 
   # Get encounter frequency for each bin
+  ## each observation had either encounter or non-encounter
   freq_z = tapply( ifelse(Data$b_i>0,1,0), INDEX=z_i, FUN=mean )
 
   # Get expectation given model
@@ -42,6 +45,21 @@ plot_encounter_diagnostic = function( Report, Data, cutpoints_z=seq(0,1,length=2
     abline(a=0, b=1, lty="dotted", lwd=2 )
     legend( "topleft", legend=c("Observed","Predicted"), fill=c("black","red"), bty="n")
   if(is.null(savedir)==FALSE) dev.off()
+
+    # df <- data.frame('bin'=midpoints_z, 
+    #                 'observed_frequency'=freq_z, 
+    #                 "predicted_frequency"=mean_z, 
+    #                 'predicted_lcl'=mean_z - interval_width*sd_mean_z, 
+    #                 "predicted_ucl"=mean_z + interval_width*sd_mean_z) %>%
+    #       na.omit()
+    # p <- ggplot(df) +
+    #   geom_line(aes(x = bin, y = predicted_frequency), col='red', lwd=2) +
+    #   geom_ribbon(aes(bin, ymin = predicted_lcl, ymax = predicted_ucl), fill="red", alpha=0.3) +
+    #   geom_point(aes(x = bin, y = observed_frequency), cex=2) +
+    #   geom_abline(aes(slope = 1, intercept = 0), linetype=2, lwd=1) +
+    #   xlab("Predicted encounter probability") + ylab("Observed encounter probability") +
+    #   coord_cartesian(xlim=c(0,1), ylim=c(0,1)) +
+    #   mytheme()
 
   # Return stuff
   Return = NULL

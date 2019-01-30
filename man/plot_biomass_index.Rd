@@ -16,6 +16,10 @@ plot_biomass_index(TmbData, Sdreport, Year_Set = NULL,
 
 \item{Sdreport}{Standard deviation outputs from TMB model via \code{sdreport(Obj)}}
 
+\item{Year_Set}{total years}
+
+\item{Years2Include}{years with data}
+
 \item{savedir}{Directory for saving plot and table}
 
 \item{PlotName}{Name for plot}

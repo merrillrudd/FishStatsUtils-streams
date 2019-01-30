@@ -35,6 +35,10 @@ plot_maps(plot_set = 3, Report, Sdreport = NULL, TmbData = NULL,
 \item{category_names}{character vector specifying names for different categories (only used for R package \code{VAST})}
 
 \item{...}{arguments passed to \code{PlotMap_Fn}}
+
+\item{Year_Set}{total years}
+
+\item{Years2Include}{years with data}
 }
 \value{
 Mat_xt a matrix (rows: modeled knots; column: modeled year) for plotted output of last element of \code{plot_set}

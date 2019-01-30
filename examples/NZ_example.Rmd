@@ -174,7 +174,7 @@ library(TMB)
 
 There are many decisions to make in running VAST models. First we choose the version and spatial model type. We also indicate the number of nodes and strata limits, although they are not used in this stream network example. 
 ```{r settings1}
-Version = "VAST_v5_2_0" 
+Version = "VAST_v5_3_0" 
 Method = "Stream_network"
 n_x = nrow(network_sub)   
 strata.limits = data.frame('STRATA'="All_areas")
