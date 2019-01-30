@@ -127,13 +127,10 @@ Opt[["SD"]]
 Enc_prob = StreamUtils::plot_encounter_diagnostic( Report=Report, Data=Data, savedir=NULL)
 
 ## diagnostics for positive catch rate component
-Q = StreamUtils::plot_quantile_diagnostic( TmbData=Data, Report=Report, FileName_QQ="Q-Q_plot", DateFile=NULL, savedir=NULL, plot=2) 
+Q = StreamUtils::plot_quantile_diagnostic( TmbData=Data, Report=Report, FileName_QQ="Q-Q_plot", DateFile=NULL, savedir=NULL, plot=2, category_names=category_names) 
 
 ## Plot Pearson residuals
 StreamUtils::plot_residuals(Extrapolation_List=Extrapolation_List, Spatial_List=Spatial_List, TmbData=Data, Data_Geostat=Data_Geostat, Report=Report, Q=Q, savedir=NULL, plot_type=1 )
-
-## Plot Pearson residuals
-StreamUtils::plot_residuals(Extrapolation_List=Extrapolation_List, Spatial_List=Spatial_List, TmbData=Data, Data_Geostat=Data_Geostat, Report=Report, Q=Q, savedir=NULL, plot_type=2 )
 
 # Decide which years to plot                                                   
 Year_Set = seq(min(Data_Geostat[,'Year']),max(Data_Geostat[,'Year']))
@@ -145,8 +142,6 @@ StreamUtils::plot_maps(plot_set=12, Report=Report, TmbData=Data, Spatial_List=Sp
 
 # ## index of abundance
 Index = StreamUtils::plot_biomass_index( TmbData=Data, Sdreport=Opt$SD, Year_Set=Year_Set, Years2Include=Years2Include, use_biascorr=FALSE, savedir=NULL, strata_names="Coho salmon", "category_names"=category_names )
-
-FishStatsUtils::plot_range_index(Sdreport=Opt[["SD"]], Report=Report, TmbData=Data, Year_Set=Year_Set, PlotDir=NULL)
 
 
 #####################################
