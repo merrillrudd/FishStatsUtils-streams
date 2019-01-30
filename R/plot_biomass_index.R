@@ -219,7 +219,7 @@ function( TmbData, Sdreport, Year_Set=NULL, Years2Include=NULL, savedir=paste0(g
         }
         if(plot_legend==TRUE & cI==TmbData$n_c) legend( "top", bty="n", fill=c(na.omit(ifelse(Calc_design==TRUE,"black",NA)),rainbow(TmbData[['n_l']])), legend=c(na.omit(ifelse(Calc_design==TRUE,"Design-based",NA)),as.character(strata_names)), ncol=2 )
       }
-      mtext( side=1:2, text=c("Year",switch(Plot_suffix[plotI], "Biomass"="Abundance (metric tonnes)", "Bratio"="Biomass ratio")), outer=TRUE, line=c(0,0) )
+      mtext( side=1:2, text=c("Year",switch(Plot_suffix[plotI], "Biomass"="Abundance", "Bratio"="Biomass ratio")), outer=TRUE, line=c(0,0) )
     if(!is.null(savedir)) dev.off()
   }
 
