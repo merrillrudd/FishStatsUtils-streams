@@ -55,7 +55,7 @@ make_extrapolation_info = function( strata.limits, stream_info=NULL, zone=NA, fl
   }
 
   # Return
-  Extrapolation_List = list( "a_el"=a_el, "Data_Extrap"=Data_Extrap, "zone"=attr(tmpUTM,"zone"), "flip_around_dateline"=flip_around_dateline, "Area_km2_x"=Area_km2_x)
+  Extrapolation_List = list( "a_el"=a_el, "Data_Extrap"=Data_Extrap, "zone"=attr(tmpUTM,"zone"), "flip_around_dateline"=flip_around_dateline)#, "Area_km2_x"=Area_km2_x)
   # Return
   return( Extrapolation_List )
 }
