@@ -28,8 +28,8 @@ make_extrapolation_info = function( strata.limits, stream_info=NULL, zone=NA, fl
   # Read extrapolation data
   Data_Extrap <- stream_info
 
-  # Survey areas
-  Area_km2_x = Data_Extrap[,'Area_km2']
+  # # Survey areas
+  # Area_km2_x = Data_Extrap[,'Area_km2']
   
   # Augment with strata for each extrapolation cell
   Tmp = cbind("BEST_LAT_DD"=Data_Extrap[,'Lat'], "BEST_LON_DD"=Data_Extrap[,'Lon'])
@@ -39,7 +39,8 @@ make_extrapolation_info = function( strata.limits, stream_info=NULL, zone=NA, fl
   a_el = as.data.frame(matrix(NA, nrow=nrow(Data_Extrap), ncol=nrow(strata.limits), dimnames=list(NULL,strata.limits[,'STRATA'])))
   for(l in 1:ncol(a_el)){
     a_el[,l] = apply(Tmp, MARGIN=1, FUN=match_strata_fn, strata_dataframe=strata.limits[l,,drop=FALSE])
-    a_el[,l] = ifelse( is.na(a_el[,l]), 0, Area_km2_x)
+    # a_el[,l] = ifelse( is.na(a_el[,l]), 0, Area_km2_x)
+    a_el[,l] = ifelse( is.na(a_el[,l]), 0, a_el[,l])
   }
 
   # Convert extrapolation-data to an Eastings-Northings coordinate system
