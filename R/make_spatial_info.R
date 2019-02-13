@@ -3,11 +3,11 @@
 #'
 #' \code{make_spatial_info} builds a tagged list with all the spatial information needed for \code{Data_Fn}
 #'
-#' @param loc_x, child nodes in the stream network
+#' @param n_x, the number of nodes in the stream network
 #' @param Lon_i, Longitude for each sample
 #' @param Lat_i, Latitude for each sample
-#' @param LON_intensity, Longitude for each location to use during k-means algorithm to decide upon the location of knots
-#' @param LAT_intensity, Latitude for each location to use during k-means algorithm to decide upon the location of knots
+#' @param Lon_x, Longitude for each child node
+#' @param Lat_x, Latitude for each child node
 #' @param Method, a character of either "Grid" or "Mesh" where "Grid" is a 2D AR1 process, and "Mesh" is the SPDE method with geometric anisotropy
 #' @param Extrapolation_List, the output from \code{Prepare_Extrapolation_Data_Fn}
 #' @param grid_size_km, the distance between grid cells for the 2D AR1 grid (determines spatial resolution when Method="Grid") when not using \code{Method="Spherical_mesh"}
@@ -28,52 +28,42 @@
 #' }
 
 #' @export
-make_spatial_info = function( loc_x, Lon_i, Lat_i, LON_intensity=Lon_i, LAT_intensity=Lat_i, Extrapolation_List, Method="Stream_network", grid_size_km=50, grid_size_LL=1,
+make_spatial_info = function( n_x, Lon_i, Lat_i, Lon_x, Lat_x, Extrapolation_List, Method="Mesh", grid_size_km=50, grid_size_LL=1,
   randomseed=1, nstart=100, iter.max=1000, ... ){
 
   if(Method != "Stream_network"){
-    stop("Using StreamUtils::make_spatial_info for stream network models only, please switch to FishStatsUtils::make_spatial_info for models that are not stream networks.")
+    stop("StreamUtils::make_spatial_info is for the stream network spatial model only. Please use FishStatsUtils::make_spatial_info for other spatial models.")
   }
-
-
-    if( is.numeric(Extrapolation_List$zone) ){
-      # Locations for samples
-      loc_i = Convert_LL_to_UTM_Fn( Lon=Lon_i, Lat=Lat_i, zone=Extrapolation_List$zone, flip_around_dateline=Extrapolation_List$flip_around_dateline )                                                         #$
-      loc_i = cbind( 'E_km'=loc_i[,'X'], 'N_km'=loc_i[,'Y'])
-      # Locations for locations for knots
-      loc_intensity = Convert_LL_to_UTM_Fn( Lon=LON_intensity, Lat=LAT_intensity, zone=Extrapolation_List$zone, flip_around_dateline=Extrapolation_List$flip_around_dateline )                                                         #$
-      loc_intensity = cbind( 'E_km'=loc_intensity[,'X'], 'N_km'=loc_intensity[,'Y'])
-    }else{
-      loc_i = Convert_LL_to_EastNorth_Fn( Lon=Lon_i, Lat=Lat_i, crs=Extrapolation_List$zone )
-      loc_intensity = Convert_LL_to_EastNorth_Fn( Lon=LON_intensity, Lat=LAT_intensity, crs=Extrapolation_List$zone )
-    }
-    # Bounds for 2D AR1 grid
-    Grid_bounds = grid_size_km * apply(Extrapolation_List$Data_Extrap[,c('E_km','N_km')]/grid_size_km, MARGIN=2, FUN=function(vec){trunc(range(vec))+c(0,1)})
-
-    # Calculate k-means centroids
-    # Kmeans = Calc_Kmeans(n_x=n_x, loc_orig=loc_intensity[,c("E_km", "N_km")], randomseed=randomseed, ... )
-    # NN_i = RANN::nn2( data=Kmeans[["centers"]], query=loc_i, k=1)$nn.idx[,1]
-    NN_i <- Extrapolation_List$Data_Extrap[,'child_i']
-
-    # Calculate grid for 2D AR1 process
-    loc_grid = expand.grid( 'E_km'=seq(Grid_bounds[1,1],Grid_bounds[2,1],by=grid_size_km), 'N_km'=seq(Grid_bounds[1,2],Grid_bounds[2,2],by=grid_size_km) )
-    Which = sort(unique(RANN::nn2(data=loc_grid, query=Extrapolation_List$Data_Extrap[which(Extrapolation_List$Area_km2_x>0),c('E_km','N_km')], k=1)$nn.idx[,1]))
-    loc_grid = loc_grid[Which,]
-    grid_num = RANN::nn2( data=loc_grid, query=loc_i, k=1)$nn.idx[,1]
-
-  if( Method %in% c("Mesh","Spherical_mesh") ){
-    knot_i = NN_i
-    # loc_x = Kmeans[["centers"]]
+  if( is.numeric(Extrapolation_List$zone) ){
+    # Locations for samples
+    loc_i = Convert_LL_to_UTM_Fn( Lon=Lon_i, Lat=Lat_i, zone=Extrapolation_List$zone, flip_around_dateline=Extrapolation_List$flip_around_dateline )                                                         #$
+    loc_i = cbind( 'E_km'=loc_i[,'X'], 'N_km'=loc_i[,'Y'])
+    # Locations for locations for knots
+    loc_x = Convert_LL_to_UTM_Fn( Lon=Lon_x, Lat=Lat_x, zone=Extrapolation_List$zone, flip_around_dateline=Extrapolation_List$flip_around_dateline )                                                         #$
+    loc_x = cbind( 'E_km'=loc_x[,'X'], 'N_km'=loc_x[,'Y'])
+  }else{
+    loc_i = Convert_LL_to_EastNorth_Fn( Lon=Lon_i, Lat=Lat_i, crs=Extrapolation_List$zone )
+    loc_x = Convert_LL_to_EastNorth_Fn( Lon=Lon_x, Lat=Lat_x, crs=Extrapolation_List$zone )
   }
+  # Bounds for 2D AR1 grid
+  Grid_bounds = grid_size_km * apply(Extrapolation_List$Data_Extrap[,c('E_km','N_km')]/grid_size_km, MARGIN=2, FUN=function(vec){trunc(range(vec))+c(0,1)})
+
+  # Calculate k-means centroids
+  Kmeans = Calc_Kmeans(n_x=n_x, loc_orig=loc_x[,c("E_km", "N_km")], randomseed=randomseed)#, ... )
+  # NN_i = RANN::nn2( data=Kmeans[["centers"]], query=loc_i, k=1)$nn.idx[,1]
+  NN_i = Extrapolation_List$Data_Extrap[,"child_i"]
+
+  # Calculate grid for 2D AR1 process
+  loc_grid = expand.grid( 'E_km'=seq(Grid_bounds[1,1],Grid_bounds[2,1],by=grid_size_km), 'N_km'=seq(Grid_bounds[1,2],Grid_bounds[2,2],by=grid_size_km) )
+  Which = sort(unique(RANN::nn2(data=loc_grid, query=Extrapolation_List$Data_Extrap[which(Extrapolation_List$Area_km2_x>0),c('E_km','N_km')], k=1)$nn.idx[,1]))
+  loc_grid = loc_grid[Which,]
+  grid_num = RANN::nn2( data=loc_grid, query=loc_i, k=1)$nn.idx[,1]
+
+  knot_i = NN_i
+  # loc_x = Kmeans[["centers"]]
+
   PolygonList = Calc_Polygon_Areas_and_Polygons_Fn( loc_x=loc_x, Data_Extrap=Extrapolation_List[["Data_Extrap"]], a_el=Extrapolation_List[["a_el"]])
   a_xl = PolygonList[["a_xl"]]
-
-  # Convert loc_x back to location in lat-long coordinates loc_x_LL
-  # if zone=NA or NULL, then it automatically detects appropriate zone
-  #tmpUTM = cbind('PID'=1,'POS'=1:nrow(loc_x),'X'=loc_x[,'E_km'],'Y'=loc_x[,'N_km'])
-  #attr(tmpUTM,"projection") = "UTM"
-  #attr(tmpUTM,"zone") = Extrapolation_List$zone
-  #loc_x_LL = PBSmapping::convUL(tmpUTM)                                                         #$
 
   # Make mesh and info for anisotropy  SpatialDeltaGLMM::
   MeshList = Calc_Anisotropic_Mesh( Method=Method, loc_x=Kmeans$centers )

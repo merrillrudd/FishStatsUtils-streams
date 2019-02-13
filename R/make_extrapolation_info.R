@@ -3,9 +3,12 @@
 #'
 #' \code{make_extrapolation_data} builds an object used to determine areas to extrapolation densities to when calculating indices
 #'
+#' @param Region a character entry that is matched against potential values to determine the region for the extrapolation grid.
 #' @param strata.limits an input for determining stratification of indices (see example script)
-#' @param stream_info data frame with 3 columns: latitude, longitude, and child node of stream segment (upstream node) associated with each observation
-#' @inheritParams Convert_LL_to_UTM_Fn
+#' @param stream_info data frame with at least 4 columns: latitude, longitude, and child node of stream segment (upstream node) associated with each observation, and "Area_km2"
+#' @param zone
+#' @param flip_around_dateline
+#' @param ... other objects passed for individual regions (see example script)
 
 #' @return Tagged list used in other functions
 #' \describe{
@@ -17,7 +20,7 @@
 #' }
 
 #' @export
-make_extrapolation_info = function( strata.limits, stream_info=NULL, zone=NA, flip_around_dateline=TRUE, ... ){
+make_extrapolation_info = function( Region, strata.limits, stream_info=NULL, zone=NA, flip_around_dateline=TRUE, ... ){
 
   # Infer strata
   if( is.null(strata.limits)){
@@ -28,8 +31,8 @@ make_extrapolation_info = function( strata.limits, stream_info=NULL, zone=NA, fl
   # Read extrapolation data
   Data_Extrap <- stream_info
 
-  # # Survey areas
-  # Area_km2_x = Data_Extrap[,'Area_km2']
+  # Survey areas
+  Area_km2_x = Data_Extrap[,'Area_km2']
   
   # Augment with strata for each extrapolation cell
   Tmp = cbind("BEST_LAT_DD"=Data_Extrap[,'Lat'], "BEST_LON_DD"=Data_Extrap[,'Lon'])
@@ -39,8 +42,7 @@ make_extrapolation_info = function( strata.limits, stream_info=NULL, zone=NA, fl
   a_el = as.data.frame(matrix(NA, nrow=nrow(Data_Extrap), ncol=nrow(strata.limits), dimnames=list(NULL,strata.limits[,'STRATA'])))
   for(l in 1:ncol(a_el)){
     a_el[,l] = apply(Tmp, MARGIN=1, FUN=match_strata_fn, strata_dataframe=strata.limits[l,,drop=FALSE])
-    # a_el[,l] = ifelse( is.na(a_el[,l]), 0, Area_km2_x)
-    a_el[,l] = ifelse( is.na(a_el[,l]), 0, a_el[,l])
+    a_el[,l] = ifelse( is.na(a_el[,l]), 0, Area_km2_x)
   }
 
   # Convert extrapolation-data to an Eastings-Northings coordinate system
@@ -55,7 +57,7 @@ make_extrapolation_info = function( strata.limits, stream_info=NULL, zone=NA, fl
   }
 
   # Return
-  Extrapolation_List = list( "a_el"=a_el, "Data_Extrap"=Data_Extrap, "zone"=attr(tmpUTM,"zone"), "flip_around_dateline"=flip_around_dateline)#, "Area_km2_x"=Area_km2_x)
-  # Return
-  return( Extrapolation_List )
+  Return = list( "a_el"=a_el, "Data_Extrap"=Data_Extrap, "zone"=attr(tmpUTM,"zone"), "flip_around_dateline"=flip_around_dateline, "Area_km2_x"=Area_km2_x)
+  return( Return )
+
 }
