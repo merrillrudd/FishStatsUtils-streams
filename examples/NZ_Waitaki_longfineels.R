@@ -5,12 +5,10 @@ rm(list=ls())
 #################
 
 devtools::install_github("james-thorson/VAST", ref="development")
-devtools::install_github("merrillrudd/FishStatsUtils")
 devtools::install_github("merrillrudd/RuddR")
 devtools::install_github("merrillrudd/StreamUtils")
 
 library(VAST)
-library(FishStatsUtils)
 library(StreamUtils)
 library(TMB)
 library(tidyverse)
@@ -57,19 +55,20 @@ Data_Geostat <- data.frame( "Catch_KG" = present_new,
 
 
 ## include latitude and longitude for user-supplied area
-Extrapolation_List = FishStatsUtils::make_extrapolation_info( Region="User", 
-  input_grid=cbind("Lat"=obs$lat, 
+Extrapolation_List = StreamUtils::make_extrapolation_info( Region="Stream", 
+  stream_info=cbind("Lat"=obs$lat, 
                     "Lon"=obs$long,
+                    "child_i"=obs$child_i,
                     "Area_km2"=1), 
                   strata.limits=strata.limits )
 
 ## change latitude and longitude by node, not using Kmeans
-Spatial_List = FishStatsUtils::make_spatial_info( n_x=n_x, 
+Spatial_List = StreamUtils::make_spatial_info( n_x=n_x, 
                           Method=Method, 
                           Lon_i=Data_Geostat[,'Lon'], 
                           Lat_i=Data_Geostat[,'Lat'], 
-                          "LAT_intensity"=network$lat, 
-                          "LON_intensity"=network$long, 
+                          Lat_x=network$lat, 
+                          Lon_x=network$long, 
                           Extrapolation_List=Extrapolation_List, 
                           Save_Results=TRUE )
 
@@ -123,24 +122,24 @@ Opt$diagnostics[,c('Param','Lower','MLE','Upper','final_gradient')]
 Opt[["SD"]]
 
 ## diagnostics for encounter probability component
-Enc_prob = plot_encounter_diagnostic( Report=Report, Data=Data, DirName=NULL)
+Enc_prob = StreamUtils::plot_encounter_diagnostic( Report=Report, Data=Data, savedir=NULL)
 
 ## diagnostics for positive catch rate component
-Q = plot_quantile_diagnostic( TmbData=Data, Report=Report, FileName_QQ="Q-Q_plot", DateFile=NULL, save_dir=NULL, plot=2) #StreamUtils::
+Q = StreamUtils::plot_quantile_diagnostic( TmbData=Data, Report=Report, FileName_QQ="Q-Q_plot", savedir=NULL, plot=2) #StreamUtils::
 
 ## Plot Pearson residuals
-plot_residuals(Extrapolation_List=Extrapolation_List, Spatial_List=Spatial_List, TmbData=Data, Data_Geostat=Data_Geostat, Report=Report, Q=Q, savedir=NULL, plot_type=1 )
-
-##### Model output
-## density surface for each year
-Dens_xt <- plot_maps(plot_set=3, Report=Report, Spatial_List=Spatial_List, Data_Geostat=Data_Geostat, Panel="year", savedir=NULL)
+StreamUtils::plot_residuals(Extrapolation_List=Extrapolation_List, Spatial_List=Spatial_List, TmbData=Data, Data_Geostat=Data_Geostat, Report=Report, Q=Q, savedir=NULL, plot_type=1 )
 
 # ## index of abundance
 # Decide which years to plot                                                   
 Year_Set = seq(min(Data_Geostat[,'Year']),max(Data_Geostat[,'Year']))
 Years2Include = which( Year_Set %in% sort(unique(Data_Geostat[,'Year'])))
 
-Index = plot_biomass_index( TmbData=Data, Sdreport=Opt$SD, Year_Set=Year_Set, Years2Include=Years2Include, use_biascorr=FALSE, DirName=NULL, strata_names = "Longfin eels" )
+##### Model output
+## density surface for each year
+Dens_xt <- StreamUtils::plot_maps(plot_set=3, Report=Report, Spatial_List=Spatial_List, Data_Geostat=Data_Geostat, Panel="year", savedir=NULL)
+
+Index = StreamUtils::plot_biomass_index( TmbData=Data, Sdreport=Opt$SD, Year_Set=Year_Set, Years2Include=Years2Include, use_biascorr=FALSE, savedir=NULL, strata_names = "Longfin eels" )
 
 ##################
 # Now try turning on spatial variation
@@ -188,21 +187,21 @@ Opt$diagnostics[,c('Param','Lower','MLE','Upper','final_gradient')]
 Opt[["SD"]]
 
 ## diagnostics for encounter probability component
-Enc_prob = plot_encounter_diagnostic( Report=Report, Data=Data, DirName=NULL)
+Enc_prob = StreamUtils::plot_encounter_diagnostic( Report=Report, Data=Data, savedir=NULL)
 
 ## diagnostics for positive catch rate component
-Q = StreamUtils::plot_quantile_diagnostic( TmbData=Data, Report=Report, FileName_QQ="Q-Q_plot", DateFile=NULL, save_dir=NULL, plot=2) #StreamUtils::
+Q = StreamUtils::plot_quantile_diagnostic( TmbData=Data, Report=Report, FileName_QQ="Q-Q_plot", DateFile=NULL, savedir=NULL, plot=2) #StreamUtils::
 
 ## Plot Pearson residuals
-plot_residuals(Extrapolation_List=Extrapolation_List, Spatial_List=Spatial_List, TmbData=Data, Data_Geostat=Data_Geostat, Report=Report, Q=Q, savedir=NULL, plot_type=1 )
-
-##### Model output
-## density surface for each year
-Dens_xt <- plot_maps(plot_set=3, Report=Report, Spatial_List=Spatial_List, Data_Geostat=Data_Geostat, Panel="year", savedir=NULL, cex=0.5)
+StreamUtils::plot_residuals(Extrapolation_List=Extrapolation_List, Spatial_List=Spatial_List, TmbData=Data, Data_Geostat=Data_Geostat, Report=Report, Q=Q, savedir=NULL, plot_type=1 )
 
 # ## index of abundance
 # Decide which years to plot                                                   
 Year_Set = seq(min(Data_Geostat[,'Year']),max(Data_Geostat[,'Year']))
 Years2Include = which( Year_Set %in% sort(unique(Data_Geostat[,'Year'])))
 
-Index = plot_biomass_index( TmbData=Data, Sdreport=Opt$SD, Year_Set=Year_Set, Years2Include=Years2Include, use_biascorr=FALSE, DirName=NULL, strata_names = "Longfin eels" )
+##### Model output
+## density surface for each year
+Dens_xt <- StreamUtils::plot_maps(plot_set=3, Report=Report, Spatial_List=Spatial_List, Data_Geostat=Data_Geostat, Panel="year", savedir=NULL, cex=0.5)
+
+Index = StreamUtils::plot_biomass_index( TmbData=Data, Sdreport=Opt$SD, Year_Set=Year_Set, Years2Include=Years2Include, use_biascorr=FALSE, savedir=NULL, strata_names = "Longfin eels" )
