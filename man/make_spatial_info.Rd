@@ -4,21 +4,20 @@
 \alias{make_spatial_info}
 \title{Build objects related to spatial information}
 \usage{
-make_spatial_info(loc_x, Lon_i, Lat_i, LON_intensity = Lon_i,
-  LAT_intensity = Lat_i, Extrapolation_List, Method = "Stream_network",
-  grid_size_km = 50, grid_size_LL = 1, randomseed = 1,
-  nstart = 100, iter.max = 1000, ...)
+make_spatial_info(n_x, Lon_i, Lat_i, Lon_x, Lat_x, Extrapolation_List,
+  Method = "Mesh", grid_size_km = 50, grid_size_LL = 1,
+  randomseed = 1, nstart = 100, iter.max = 1000, ...)
 }
 \arguments{
-\item{loc_x, }{child nodes in the stream network}
+\item{n_x, }{the number of nodes in the stream network}
 
 \item{Lon_i, }{Longitude for each sample}
 
 \item{Lat_i, }{Latitude for each sample}
 
-\item{LON_intensity, }{Longitude for each location to use during k-means algorithm to decide upon the location of knots}
+\item{Lon_x, }{Longitude for each child node}
 
-\item{LAT_intensity, }{Latitude for each location to use during k-means algorithm to decide upon the location of knots}
+\item{Lat_x, }{Latitude for each child node}
 
 \item{Extrapolation_List, }{the output from \code{Prepare_Extrapolation_Data_Fn}}
 

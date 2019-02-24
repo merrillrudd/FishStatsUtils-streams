@@ -6,7 +6,8 @@
 \usage{
 plot_network(Extrapolation_List, Spatial_List, TmbData, Data_Geostat,
   category_names = NULL, observations = TRUE, arrows = TRUE,
-  root = TRUE, savedir = NULL, plot_type = 1, show = TRUE, ...)
+  root = TRUE, savedir = NULL, plot_type = 1, show = TRUE,
+  cex_network = 1, ...)
 }
 \arguments{
 \item{Extrapolation_List}{Output from \code{Prepare_Extrapolation_Data_Fn}}
@@ -28,6 +29,8 @@ plot_network(Extrapolation_List, Spatial_List, TmbData, Data_Geostat,
 \item{plot_type}{1 == all or 2 == by year}
 
 \item{show}{print figure}
+
+\item{cex_network}{point size for network}
 
 \item{...}{addition inputs to \code{plot}}
 

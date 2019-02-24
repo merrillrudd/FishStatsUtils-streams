@@ -4,13 +4,17 @@
 \alias{make_extrapolation_info}
 \title{Build extrapolation grid}
 \usage{
-make_extrapolation_info(strata.limits, stream_info = NULL, zone = NA,
-  flip_around_dateline = TRUE, ...)
+make_extrapolation_info(Region, strata.limits, stream_info = NULL,
+  zone = NA, flip_around_dateline = TRUE, ...)
 }
 \arguments{
+\item{Region}{a character entry that is matched against potential values to determine the region for the extrapolation grid.}
+
 \item{strata.limits}{an input for determining stratification of indices (see example script)}
 
-\item{stream_info}{data frame with 3 columns: latitude, longitude, and child node of stream segment (upstream node) associated with each observation}
+\item{stream_info}{data frame with at least 4 columns: latitude, longitude, and child node of stream segment (upstream node) associated with each observation, and "Area_km2"}
+
+\item{...}{other objects passed for individual regions (see example script)}
 }
 \value{
 Tagged list used in other functions

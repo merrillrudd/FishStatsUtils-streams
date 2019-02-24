@@ -5,7 +5,8 @@
 \title{Plot standard maps}
 \usage{
 plot_maps(plot_set = 3, Report, Sdreport = NULL, TmbData = NULL,
-  savedir = paste0(getwd(), "/"), category_names = NULL, ...)
+  savedir = paste0(getwd(), "/"), category_names = NULL,
+  cex_network = 1, ...)
 }
 \arguments{
 \item{plot_set}{integer-vector defining plots to create
@@ -33,6 +34,8 @@ plot_maps(plot_set = 3, Report, Sdreport = NULL, TmbData = NULL,
 \item{savedir}{Directory (absolute path) and base for filenames of plots}
 
 \item{category_names}{character vector specifying names for different categories (only used for R package \code{VAST})}
+
+\item{cex_network}{point size for network}
 
 \item{...}{arguments passed to \code{PlotMap_Fn}}
 
