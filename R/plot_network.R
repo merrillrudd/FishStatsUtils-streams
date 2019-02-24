@@ -13,11 +13,12 @@
 #' @param root default TRUE to show root nodes, FALSE in case there are other root nodes that are not meaningful.
 #' @param plot_type 1 == all or 2 == by year
 #' @param show print figure
+#' @param cex_network point size for network
 #' @param ... addition inputs to \code{plot}
 #' 
 #' @return Figure plotting stream network and observations
 #' @export
-plot_network <- function(Extrapolation_List, Spatial_List, TmbData, Data_Geostat, category_names=NULL, observations=TRUE, arrows=TRUE, root=TRUE, savedir=NULL, plot_type=1, show=TRUE,...){
+plot_network <- function(Extrapolation_List, Spatial_List, TmbData, Data_Geostat, category_names=NULL, observations=TRUE, arrows=TRUE, root=TRUE, savedir=NULL, plot_type=1, show=TRUE, cex_network = 1,...){
 
 	## observation locations
 	obs1 <- data.frame(Extrapolation_List$Data_Extrap)
@@ -42,7 +43,7 @@ plot_network <- function(Extrapolation_List, Spatial_List, TmbData, Data_Geostat
 
 	## add points and complete figure
 	aa <- aa +
-	    geom_point(data = Network, aes(x = E_km, y = N_km), color = "black", alpha=0.6) +
+	    geom_point(data = Network, aes(x = E_km, y = N_km), color = "black", alpha=0.6, cex=cex_network) +
 	    xlab("Eastings") + ylab("Northings")
 
 	## option to add arrows
@@ -101,7 +102,7 @@ plot_network <- function(Extrapolation_List, Spatial_List, TmbData, Data_Geostat
 
 	## add points and complete figure
 	bb <- bb +
-	    geom_point(data = Network, aes(x = E_km, y = N_km), color = "black", alpha=0.6) +
+	    geom_point(data = Network, aes(x = E_km, y = N_km), color = "black", alpha=0.6, cex=cex_network) +
 	    xlab("Eastings") + ylab("Northings")
 
 	## option to add observations

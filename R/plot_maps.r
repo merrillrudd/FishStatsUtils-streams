@@ -27,6 +27,7 @@
 #' @param Years2Include years with data
 #' @param savedir Directory (absolute path) and base for filenames of plots
 #' @param category_names character vector specifying names for different categories (only used for R package \code{VAST})
+#' @param cex_network point size for network
 #' @inheritParams plot_network
 #' \describe{
 #'   \item{use}{Boolean whether to plot insert colorbar or not}
@@ -45,7 +46,8 @@ plot_maps <-
 function(plot_set=3, Report, Sdreport=NULL,
          TmbData=NULL, 
          savedir=paste0(getwd(),"/"), 
-         category_names=NULL, ...){
+         category_names=NULL, 
+         cex_network=1, ...){
 
   # avoid attaching maps and mapdata to use worldHires plotting
   if( !(all(c("package:maps","package:mapdata") %in% search())) ){
@@ -261,7 +263,7 @@ function(plot_set=3, Report, Sdreport=NULL,
           xct <- do.call(rbind, xct)
 
           p <- ggplot(xct) +
-              geom_point(aes(x = E_km, y = N_km, color = value), ...) +
+              geom_point(aes(x = E_km, y = N_km, color = value), cex=cex_network, ...) +
               scale_color_distiller(palette = "Spectral") +
               scale_x_continuous(breaks=quantile(xct$E_km, prob=c(0.1,0.5,0.9)), labels=round(quantile(xct$E_km, prob=c(0.1,0.5,0.9)),0)) +
               # guides(color=guide_legend(title=plot_codes[plot_num])) +
