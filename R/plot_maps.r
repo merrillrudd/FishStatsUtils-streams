@@ -254,13 +254,15 @@ function(plot_set=3, Report, Sdreport=NULL,
         if(length(dim(Array_xct))==2) Mat_xt = Array_xct
         if(length(dim(Array_xct))==3) Mat_xt = Array_xct[,cI,]
           ## matrix is number of nodes by number of years
-          n_t <- dim(Mat_xt)[2]
+          if(is.null(dim(Mat_xt)))  n_t = 1 else n_t <- dim(Mat_xt)[2]
           if(n_t != length(years)) stop("number of years in density array does not match Data_Geostat years")
-          xct <- lapply(1:n_t, function(x){
-            out <- data.frame('value'=Mat_xt[,x], 'year'=years[x], Spatial_List$loc_x)
-            return(out)
-          })
-          xct <- do.call(rbind, xct)
+          if(n_t > 1) {
+            xct <- lapply(1:n_t, function(x){
+              out <- data.frame('value'=Mat_xt[,x], 'year'=years[x], Spatial_List$loc_x)
+              return(out)
+            })
+            xct <- do.call(rbind, xct)
+          } else xct <- data.frame('value'=Mat_xt, 'year'=years, Spatial_List$loc_x)
 
           p <- ggplot(xct) +
               geom_point(aes(x = E_km, y = N_km, color = value), cex=cex_network, ...) +
