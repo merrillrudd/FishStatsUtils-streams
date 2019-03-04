@@ -70,7 +70,9 @@ make_spatial_info = function( n_x, Network_sz, Lon_i, Lat_i, Lon_x, Lat_x, Extra
   PolygonList = Calc_Polygon_Areas_and_Polygons_Fn( loc_x=loc_x, Data_Extrap=Extrapolation_List[["Data_Extrap"]], a_el=Extrapolation_List[["a_el"]])
   
   ## use actual area for each node in stream network
-  a_xl = Network_sz %>% select('dist_s') #PolygonList[["a_xl"]]
+  dist_inp <- Network_sz$dist_s
+  dist_inp[which(is.infinite(dist_inp))] <- 0
+  a_xl = matrix(dist_inp,nrow=n_x) #PolygonList[["a_xl"]]
 
   # Make mesh and info for anisotropy  SpatialDeltaGLMM::
   ## loc_x directly calculated from known locations on stream network
