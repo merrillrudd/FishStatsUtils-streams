@@ -8,6 +8,7 @@
 #' @param Lat_i, Latitude for each sample
 #' @param Lon_x, Longitude for each child node
 #' @param Lat_x, Latitude for each child node
+#' @param Network_sz data frame of network information including column names 'parent_s', 'child_s', 'dist_s'
 #' @param Method, a character of either "Grid" or "Mesh" where "Grid" is a 2D AR1 process, and "Mesh" is the SPDE method with geometric anisotropy
 #' @param Extrapolation_List, the output from \code{Prepare_Extrapolation_Data_Fn}
 #' @param grid_size_km, the distance between grid cells for the 2D AR1 grid (determines spatial resolution when Method="Grid") when not using \code{Method="Spherical_mesh"}
@@ -28,7 +29,7 @@
 #' }
 
 #' @export
-make_spatial_info = function( n_x, Lon_i, Lat_i, Lon_x, Lat_x, Extrapolation_List, Method="Mesh", grid_size_km=50, grid_size_LL=1,
+make_spatial_info = function( n_x, Network_sz, Lon_i, Lat_i, Lon_x, Lat_x, Extrapolation_List, Method="Mesh", grid_size_km=50, grid_size_LL=1,
   randomseed=1, nstart=100, iter.max=1000, ... ){
 
   if(Method != "Stream_network"){
@@ -46,27 +47,34 @@ make_spatial_info = function( n_x, Lon_i, Lat_i, Lon_x, Lat_x, Extrapolation_Lis
     loc_x = Convert_LL_to_EastNorth_Fn( Lon=Lon_x, Lat=Lat_x, crs=Extrapolation_List$zone )
   }
   # Bounds for 2D AR1 grid
+  ### NOT USED FOR STREAM NETWORK -- DOESNT MATTER
   Grid_bounds = grid_size_km * apply(Extrapolation_List$Data_Extrap[,c('E_km','N_km')]/grid_size_km, MARGIN=2, FUN=function(vec){trunc(range(vec))+c(0,1)})
 
   # Calculate k-means centroids
   Kmeans = Calc_Kmeans(n_x=n_x, loc_orig=loc_x[,c("E_km", "N_km")], randomseed=randomseed)#, ... )
   # NN_i = RANN::nn2( data=Kmeans[["centers"]], query=loc_i, k=1)$nn.idx[,1]
+  ## use actual upstream child node for stream network
   NN_i = Extrapolation_List$Data_Extrap[,"child_i"]
 
   # Calculate grid for 2D AR1 process
+  ### NOT USED FOR STREAM NETWORK --- DOESNT MATTER
   loc_grid = expand.grid( 'E_km'=seq(Grid_bounds[1,1],Grid_bounds[2,1],by=grid_size_km), 'N_km'=seq(Grid_bounds[1,2],Grid_bounds[2,2],by=grid_size_km) )
   Which = sort(unique(RANN::nn2(data=loc_grid, query=Extrapolation_List$Data_Extrap[which(Extrapolation_List$Area_km2_x>0),c('E_km','N_km')], k=1)$nn.idx[,1]))
   loc_grid = loc_grid[Which,]
   grid_num = RANN::nn2( data=loc_grid, query=loc_i, k=1)$nn.idx[,1]
 
+  ## use actual upstream child nodes for stream network
   knot_i = NN_i
   # loc_x = Kmeans[["centers"]]
 
   PolygonList = Calc_Polygon_Areas_and_Polygons_Fn( loc_x=loc_x, Data_Extrap=Extrapolation_List[["Data_Extrap"]], a_el=Extrapolation_List[["a_el"]])
-  a_xl = PolygonList[["a_xl"]]
+  
+  ## use actual area for each node in stream network
+  a_xl = Network_sz %>% select('dist_s') #PolygonList[["a_xl"]]
 
   # Make mesh and info for anisotropy  SpatialDeltaGLMM::
-  MeshList = Calc_Anisotropic_Mesh( Method=Method, loc_x=Kmeans$centers )
+  ## loc_x directly calculated from known locations on stream network
+  MeshList = Calc_Anisotropic_Mesh( Method=Method, loc_x=loc_x )
 
   # Make matrices for 2D AR1 process
   Dist_grid = dist(loc_grid, diag=TRUE, upper=TRUE)
