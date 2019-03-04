@@ -4,12 +4,15 @@
 \alias{make_spatial_info}
 \title{Build objects related to spatial information}
 \usage{
-make_spatial_info(n_x, Lon_i, Lat_i, Lon_x, Lat_x, Extrapolation_List,
-  Method = "Mesh", grid_size_km = 50, grid_size_LL = 1,
-  randomseed = 1, nstart = 100, iter.max = 1000, ...)
+make_spatial_info(n_x, Network_sz, Lon_i, Lat_i, Lon_x, Lat_x,
+  Extrapolation_List, Method = "Mesh", grid_size_km = 50,
+  grid_size_LL = 1, randomseed = 1, nstart = 100, iter.max = 1000,
+  ...)
 }
 \arguments{
 \item{n_x, }{the number of nodes in the stream network}
+
+\item{Network_sz}{data frame of network information including column names 'parent_s', 'child_s', 'dist_s'}
 
 \item{Lon_i, }{Longitude for each sample}
 
