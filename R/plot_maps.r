@@ -28,6 +28,7 @@
 #' @param Years2Include years with data
 #' @param savedir Directory (absolute path) and base for filenames of plots
 #' @param category_names character vector specifying names for different categories (only used for R package \code{VAST})
+#' @param covar_names character vector specifying names for different covariates
 #' @param cex_network point size for network
 #' @inheritParams plot_network
 #' \describe{
@@ -48,6 +49,7 @@ function(plot_set=3, Report, Sdreport=NULL,
          TmbData=NULL, 
          savedir=paste0(getwd(),"/"), 
          category_names=NULL, 
+         covar_names=NULL,
          cex_network=1, 
          X_xtp, ...){
 
@@ -208,7 +210,7 @@ function(plot_set=3, Report, Sdreport=NULL,
       if(is.null(TmbData)) stop( "Must provide `TmbData` to plot covariates" )
       if(!("X_xtp" %in% names(TmbData))) stop( "Can only plot covariates for VAST version >= 2.0.0" )
       Array_xct = aperm( TmbData$X_xtp, perm=c(1,3,2) )
-      category_names = 1:dim(Array_xct)[2]
+      # category_names = 1:dim(Array_xct)[2]
     }
     if(plot_num==12){
       # Total density ("Dens")
@@ -242,6 +244,7 @@ function(plot_set=3, Report, Sdreport=NULL,
       gamma1_ctp <- summary(Sdreport)[which(grepl("gamma1", rownames(summary(Sdreport)))),"Estimate"]
       
       n_p <- dim(X_xtp)[3]
+      category_names <- covar_names
       Array_xct <- array(NA, dim=c(dim(X_xtp)[1],n_p,dim(X_xtp)[2]))
       for(i in 1:n_p){
         eta <- gamma1_ctp[i] * X_xtp[,,i]
