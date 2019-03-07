@@ -6,12 +6,12 @@
 \usage{
 plot_maps(plot_set = 3, Report, Sdreport = NULL, TmbData = NULL,
   savedir = paste0(getwd(), "/"), category_names = NULL,
-  cex_network = 1, ...)
+  cex_network = 1, X_xtp, ...)
 }
 \arguments{
 \item{plot_set}{integer-vector defining plots to create
 \describe{
-  \item{plot_set=1}{Probability of encounter/non-encounter}
+  \item{plot_set=1}{Probability of encounter/no-encounter}
   \item{plot_set=2}{Log-expected positive catch rate}
   \item{plot_set=3}{Log-predicted density (product of encounter probability and positive catch rates)}
   \item{plot_set=4}{Log-positive catch rates (rescaled)}
@@ -25,6 +25,7 @@ plot_maps(plot_set = 3, Report, Sdreport = NULL, TmbData = NULL,
   \item{plot_set=12}{Total biomass across all categories (only useful in a multivariate model)}
   \item{plot_set=13}{Covariate effects on encounter probability}
   \item{plot_set=14}{Covariate effects on positive catch rates}
+  \item{plot_set=15}{Covariate effect on encounter probability by covariate}
 }}
 
 \item{Report}{tagged list of outputs from TMB model via \code{Obj$report()}}

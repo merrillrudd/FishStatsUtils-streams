@@ -6,7 +6,7 @@
 #'
 #' @param plot_set integer-vector defining plots to create
 #' \describe{
-#'   \item{plot_set=1}{Probability of encounter/non-encounter}
+#'   \item{plot_set=1}{Probability of encounter/no-encounter}
 #'   \item{plot_set=2}{Log-expected positive catch rate}
 #'   \item{plot_set=3}{Log-predicted density (product of encounter probability and positive catch rates)}
 #'   \item{plot_set=4}{Log-positive catch rates (rescaled)}
@@ -20,6 +20,7 @@
 #'   \item{plot_set=12}{Total biomass across all categories (only useful in a multivariate model)}
 #'   \item{plot_set=13}{Covariate effects on encounter probability}
 #'   \item{plot_set=14}{Covariate effects on positive catch rates}
+#'   \item{plot_set=15}{Covariate effect on encounter probability by covariate}
 #' }
 #' @param Report tagged list of outputs from TMB model via \code{Obj$report()}
 #' @param Sdreport Standard deviation outputs from TMB model via \code{sdreport(Obj)}
@@ -47,7 +48,8 @@ function(plot_set=3, Report, Sdreport=NULL,
          TmbData=NULL, 
          savedir=paste0(getwd(),"/"), 
          category_names=NULL, 
-         cex_network=1, ...){
+         cex_network=1, 
+         X_xtp, ...){
 
   # avoid attaching maps and mapdata to use worldHires plotting
   if( !(all(c("package:maps","package:mapdata") %in% search())) ){
@@ -111,8 +113,8 @@ function(plot_set=3, Report, Sdreport=NULL,
   }
 
   # Extract elements
-  plot_codes <- c("Pres", "Pos", "Dens", "Pos_Rescaled", "Dens_Rescaled", "Eps_Pres", "Eps_Pos", "LinPred_Pres", "LinPred_Pos", "Dens_CV", "Covariates", "Total_dens", "Cov_effects_Pres", "Cov_effects_Pos")
-  plot_names <- c("presence_absence", "log-positive catch rates", "log-density", "positive catch rates", "density", "epsilon for presence_absence", "epsilon for positive catch rates", "encounter probability linear predictor", "positive catch rates linear predictor", "density CV", "covariates", "total density", "encounter probability covariate effects", "catch rates covariate effects")
+  plot_codes <- c("Pres", "Pos", "Dens", "Pos_Rescaled", "Dens_Rescaled", "Eps_Pres", "Eps_Pos", "LinPred_Pres", "LinPred_Pos", "Dens_CV", "Covariates", "Total_dens", "Cov_effects_Pres", "Cov_effects_Pos", "Individual_cov_effects_Pres")
+  plot_names <- c("presence_absence", "log-positive catch rates", "log-density", "positive catch rates", "density", "epsilon for presence_absence", "epsilon for positive catch rates", "encounter probability linear predictor", "positive catch rates linear predictor", "density CV", "covariates", "total density", "encounter probability covariate effects", "catch rates covariate effects", "encounter probability covariate effects")
 
   # Loop through plots
   for(plot_num in plot_set){
@@ -232,6 +234,20 @@ function(plot_set=3, Report, Sdreport=NULL,
       if("dhat_ktp" %in% names(Report)) stop()
       if("dpred_ktp" %in% names(Report)) stop()
     }
+    if(plot_num==15){
+      if(is.null(TmbData)) stop( "Must provide `TmbData` to plot covariates" )
+      if(!("X_xtp" %in% names(TmbData))) stop( "Can only plot covariates for VAST version >= 2.0.0" )
+
+      X_xtp <- TmbData$X_xtp
+      gamma1_ctp <- summary(Sdreport)[which(grepl("gamma1", rownames(summary(Sdreport)))),"Estimate"]
+      
+      n_p <- dim(X_xtp)[3]
+      Array_xct <- array(NA, dim=c(dim(X_xtp)[1],n_p,dim(X_xtp)[2]))
+      for(i in 1:n_p){
+        eta <- gamma1_ctp[i] * X_xtp[,,i]
+        Array_xct[,i,] <- eta
+      }
+    }
     years <- min(Data_Geostat$Year):max(Data_Geostat$Year)
     # xct <- lapply(1:n_t, function(x){
     #   mat <- matrix(Array_xct[,,x], ncol=n_c)
@@ -265,7 +281,7 @@ function(plot_set=3, Report, Sdreport=NULL,
           } else xct <- data.frame('value'=Mat_xt, 'year'=years, Spatial_List$loc_x)
 
           p <- ggplot(xct) +
-              geom_point(aes(x = E_km, y = N_km, color = value), cex=cex_network, ...) +
+              geom_point(aes(x = E_km, y = N_km, color = value), cex=cex_network) +#, ...) +
               scale_color_distiller(palette = "Spectral") +
               scale_x_continuous(breaks=quantile(xct$E_km, prob=c(0.1,0.5,0.9)), labels=round(quantile(xct$E_km, prob=c(0.1,0.5,0.9)),0)) +
               # guides(color=guide_legend(title=plot_codes[plot_num])) +
